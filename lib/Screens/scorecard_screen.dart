@@ -66,16 +66,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
         final matchId = match['id'] as int;
         final matchDate = match['date'] as String;
 
-        // Get all player scores for this match
-        final playerScores = await dbHelper.getPlayerScoresForMatch(matchId);
+        // ✅ Make list mutable
+        final playerScores =
+        List<Map<String, dynamic>>.from(
+          await dbHelper.getPlayerScoresForMatch(matchId),
+        );
 
         if (playerScores.isNotEmpty) {
-          // Sort by total strokes (lowest score wins in golf)
           playerScores.sort((a, b) =>
-              (a['total_strokes'] as int).compareTo(b['total_strokes'] as int)
-          );
+              (a['total_strokes'] as int)
+                  .compareTo(b['total_strokes'] as int));
 
-          // Get the winner (lowest score)
           final winner = playerScores.first;
 
           loadedWinners.add(WinnerData(
