@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scary_strokes/Screens/MatchScreen.dart';
-import 'package:scary_strokes/Widgets/startMatchButton.dart';
+
+import '../Widgets/homeScreenButtons.dart';
 
 class StartGameScreen extends StatefulWidget {
   const StartGameScreen({super.key});
@@ -297,7 +298,16 @@ class _StartGameScreenState extends State<StartGameScreen> with TickerProviderSt
                           const SizedBox(height: 16),
 
                           // Start Match Button
-                          StartMatchButton(onTap: _startMatch),
+                          EnhancedHomeButton(
+                            title: 'Start Match',
+                            icon: Icons.play_arrow_rounded,
+                            gradientColors: const [Color(0xFFFF8C00), Color(0xFFE63946)],
+                            glowColor: const Color(0xFFFF8C00),
+                            onTap: () {
+                              _startMatch();
+                            },
+                            delay: 0,
+                          ),
                         ],
                       ),
                     ),
