@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFFFF8C00).withOpacity(0.1),
+                      const Color(0xFFFF8C00).withValues(alpha:0.1),
                       Colors.transparent,
                     ],
                   ),
@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF7B2CBF).withOpacity(0.15),
+                      const Color(0xFF7B2CBF).withValues(alpha:0.15),
                       Colors.transparent,
                     ],
                   ),
@@ -118,10 +118,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFF8C00).withOpacity(0.15),
+                          color: const Color(0xFFFF8C00).withValues(alpha:0.15),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: const Color(0xFFFF8C00).withOpacity(0.3),
+                            color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                           ),
                         ),
                         child: const Text(
@@ -150,19 +150,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 borderRadius: BorderRadius.circular(30),
                                 gradient: LinearGradient(
                                   colors: [
-                                    const Color(0xFF2D2D44).withOpacity(0.6),
-                                    const Color(0xFF1F1F2E).withOpacity(0.4),
+                                    const Color(0xFF2D2D44).withValues(alpha:0.6),
+                                    const Color(0xFF1F1F2E).withValues(alpha:0.4),
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
                                 border: Border.all(
-                                  color: const Color(0xFFFF8C00).withOpacity(0.3),
+                                  color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                                   width: 2,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFFF8C00).withOpacity(0.2),
+                                    color: const Color(0xFFFF8C00).withValues(alpha:0.2),
                                     blurRadius: 30,
                                     offset: const Offset(0, 15),
                                   ),

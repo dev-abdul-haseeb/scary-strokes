@@ -144,7 +144,7 @@ class _TipsScreenState extends State<TipsScreen> with TickerProviderStateMixin {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFFFF8C00).withOpacity(0.1),
+                      const Color(0xFFFF8C00).withValues(alpha:0.1),
                       Colors.transparent,
                     ],
                   ),
@@ -161,7 +161,7 @@ class _TipsScreenState extends State<TipsScreen> with TickerProviderStateMixin {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF7B2CBF).withOpacity(0.15),
+                      const Color(0xFF7B2CBF).withValues(alpha:0.15),
                       Colors.transparent,
                     ],
                   ),
@@ -186,13 +186,13 @@ class _TipsScreenState extends State<TipsScreen> with TickerProviderStateMixin {
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    const Color(0xFF2D2D44).withOpacity(0.6),
-                                    const Color(0xFF1F1F2E).withOpacity(0.4),
+                                    const Color(0xFF2D2D44).withValues(alpha:0.6),
+                                    const Color(0xFF1F1F2E).withValues(alpha:0.4),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(15),
                                 border: Border.all(
-                                  color: const Color(0xFFFF8C00).withOpacity(0.3),
+                                  color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                                 ),
                               ),
                               child: const Icon(
@@ -254,23 +254,23 @@ class _TipsScreenState extends State<TipsScreen> with TickerProviderStateMixin {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: isSelected
-                                        ? [category.color, category.color.withOpacity(0.8)]
+                                        ? [category.color, category.color.withValues(alpha:0.8)]
                                         : [
-                                      const Color(0xFF2D2D44).withOpacity(0.6),
-                                      const Color(0xFF1F1F2E).withOpacity(0.4),
+                                      const Color(0xFF2D2D44).withValues(alpha:0.6),
+                                      const Color(0xFF1F1F2E).withValues(alpha:0.4),
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
                                     color: isSelected
-                                        ? category.color.withOpacity(0.8)
-                                        : Colors.white.withOpacity(0.1),
+                                        ? category.color.withValues(alpha:0.8)
+                                        : Colors.white.withValues(alpha:0.1),
                                     width: isSelected ? 2 : 1,
                                   ),
                                   boxShadow: isSelected
                                       ? [
                                     BoxShadow(
-                                      color: category.color.withOpacity(0.4),
+                                      color: category.color.withValues(alpha:0.4),
                                       blurRadius: 15,
                                       offset: const Offset(0, 5),
                                     ),
@@ -332,13 +332,13 @@ class _TipsScreenState extends State<TipsScreen> with TickerProviderStateMixin {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      const Color(0xFF2D2D44).withOpacity(0.8),
-                                      const Color(0xFF1F1F2E).withOpacity(0.6),
+                                      const Color(0xFF2D2D44).withValues(alpha:0.8),
+                                      const Color(0xFF1F1F2E).withValues(alpha:0.6),
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(25),
                                   border: Border.all(
-                                    color: category.color.withOpacity(0.3),
+                                    color: category.color.withValues(alpha:0.3),
                                     width: 2,
                                   ),
                                 ),
@@ -355,7 +355,7 @@ class _TipsScreenState extends State<TipsScreen> with TickerProviderStateMixin {
                                             gradient: LinearGradient(
                                               colors: [
                                                 category.color,
-                                                category.color.withOpacity(0.7),
+                                                category.color.withValues(alpha:0.7),
                                               ],
                                             ),
                                             borderRadius: BorderRadius.circular(15),
@@ -382,7 +382,7 @@ class _TipsScreenState extends State<TipsScreen> with TickerProviderStateMixin {
                                               Text(
                                                 '${category.tips.length} tips',
                                                 style: TextStyle(
-                                                  color: Colors.white.withOpacity(0.7),
+                                                  color: Colors.white.withValues(alpha:0.7),
                                                   fontSize: 14,
                                                 ),
                                               ),
@@ -407,13 +407,13 @@ class _TipsScreenState extends State<TipsScreen> with TickerProviderStateMixin {
                                             decoration: BoxDecoration(
                                               gradient: LinearGradient(
                                                 colors: [
-                                                  const Color(0xFF1A1A2E).withOpacity(0.8),
-                                                  const Color(0xFF0A0A0F).withOpacity(0.6),
+                                                  const Color(0xFF1A1A2E).withValues(alpha:0.8),
+                                                  const Color(0xFF0A0A0F).withValues(alpha:0.6),
                                                 ],
                                               ),
                                               borderRadius: BorderRadius.circular(15),
                                               border: Border.all(
-                                                color: category.color.withOpacity(0.2),
+                                                color: category.color.withValues(alpha:0.2),
                                               ),
                                             ),
                                             child: Row(
@@ -423,7 +423,7 @@ class _TipsScreenState extends State<TipsScreen> with TickerProviderStateMixin {
                                                   width: 30,
                                                   height: 30,
                                                   decoration: BoxDecoration(
-                                                    color: category.color.withOpacity(0.2),
+                                                    color: category.color.withValues(alpha:0.2),
                                                     borderRadius: BorderRadius.circular(10),
                                                   ),
                                                   child: Center(
@@ -476,7 +476,7 @@ class _TipsScreenState extends State<TipsScreen> with TickerProviderStateMixin {
                             decoration: BoxDecoration(
                               color: index == _currentTipIndex
                                   ? tips[index].color
-                                  : Colors.white.withOpacity(0.3),
+                                  : Colors.white.withValues(alpha:0.3),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
@@ -502,13 +502,13 @@ class _TipsScreenState extends State<TipsScreen> with TickerProviderStateMixin {
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                const Color(0xFFFF8C00).withOpacity(0.8),
-                                const Color(0xFFE63946).withOpacity(0.6),
+                                const Color(0xFFFF8C00).withValues(alpha:0.8),
+                                const Color(0xFFE63946).withValues(alpha:0.6),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: const Color(0xFFFF8C00).withOpacity(0.4),
+                              color: const Color(0xFFFF8C00).withValues(alpha:0.4),
                             ),
                           ),
                           child: const Row(

@@ -136,7 +136,7 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
     }
 
     var sortedPlayers = widget.players.toList()
-      ..sort((a, b) => finalScores[a?.name]!.compareTo(finalScores[b.name]!));
+      ..sort((a, b) => finalScores[a.name]!.compareTo(finalScores[b.name]!));
 
     showDialog(
       context: context,
@@ -152,20 +152,20 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                const Color(0xFF2D2D44).withOpacity(0.95),
-                const Color(0xFF1F1F2E).withOpacity(0.95),
+                const Color(0xFF2D2D44).withValues(alpha:0.95),
+                const Color(0xFF1F1F2E).withValues(alpha:0.95),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(screenWidth * 0.06),
             border: Border.all(
-              color: const Color(0xFFFF8C00).withOpacity(0.3),
+              color: const Color(0xFFFF8C00).withValues(alpha:0.3),
               width: 2,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha:0.5),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -194,13 +194,13 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      const Color(0xFFFF8C00).withOpacity(0.2),
-                      const Color(0xFFFFB347).withOpacity(0.1),
+                      const Color(0xFFFF8C00).withValues(alpha:0.2),
+                      const Color(0xFFFFB347).withValues(alpha:0.1),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(screenWidth * 0.04),
                   border: Border.all(
-                    color: const Color(0xFFFF8C00).withOpacity(0.4),
+                    color: const Color(0xFFFF8C00).withValues(alpha:0.4),
                   ),
                 ),
                 child: Row(
@@ -270,13 +270,13 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              const Color(0xFF1A1A2E).withOpacity(0.6),
-                              const Color(0xFF0A0A0F).withOpacity(0.4),
+                              const Color(0xFF1A1A2E).withValues(alpha:0.6),
+                              const Color(0xFF0A0A0F).withValues(alpha:0.4),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(screenWidth * 0.03),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha:0.1),
                           ),
                         ),
                         child: Row(
@@ -287,7 +287,7 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(screenWidth * 0.025),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.3),
+                                  color: Colors.white.withValues(alpha:0.3),
                                 ),
                               ),
                               child: ClipRRect(
@@ -313,7 +313,7 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                             Text(
                               '${finalScores[player.name]}',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha:0.7),
                                 fontSize: screenWidth * 0.05,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -341,7 +341,7 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                     borderRadius: BorderRadius.circular(screenWidth * 0.04),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFFF8C00).withOpacity(0.4),
+                        color: const Color(0xFFFF8C00).withValues(alpha:0.4),
                         blurRadius: 15,
                         offset: const Offset(0, 5),
                       ),
@@ -474,13 +474,13 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                const Color(0xFF2D2D44).withOpacity(0.6),
-                                const Color(0xFF1F1F2E).withOpacity(0.4),
+                                const Color(0xFF2D2D44).withValues(alpha:0.6),
+                                const Color(0xFF1F1F2E).withValues(alpha:0.4),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.04),
                             border: Border.all(
-                              color: const Color(0xFFFF8C00).withOpacity(0.3),
+                              color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                             ),
                           ),
                           child: Icon(
@@ -517,18 +517,18 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          const Color(0xFF2D2D44).withOpacity(0.8),
-                          const Color(0xFF1F1F2E).withOpacity(0.6),
+                          const Color(0xFF2D2D44).withValues(alpha:0.8),
+                          const Color(0xFF1F1F2E).withValues(alpha:0.6),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.05),
                       border: Border.all(
-                        color: const Color(0xFFFF8C00).withOpacity(0.3),
+                        color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                         width: 1.5,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Colors.black.withValues(alpha:0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -550,8 +550,8 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    const Color(0xFFFF8C00).withOpacity(0.4),
-                                    const Color(0xFFFFB347).withOpacity(0.3),
+                                    const Color(0xFFFF8C00).withValues(alpha:0.4),
+                                    const Color(0xFFFFB347).withValues(alpha:0.3),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.only(
@@ -559,13 +559,13 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                                 ),
                                 border: Border(
                                   right: BorderSide(
-                                    color: const Color(0xFFFF8C00).withOpacity(0.3),
+                                    color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                                     width: 1.5,
                                   ),
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFFF8C00).withOpacity(0.2),
+                                    color: const Color(0xFFFF8C00).withValues(alpha:0.2),
                                     blurRadius: 8,
                                     offset: const Offset(0, 2),
                                   ),
@@ -601,19 +601,19 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                                       decoration: BoxDecoration(
                                         border: Border(
                                           right: BorderSide(
-                                            color: const Color(0xFFFF8C00).withOpacity(0.25),
+                                            color: const Color(0xFFFF8C00).withValues(alpha:0.25),
                                             width: 1.5,
                                           ),
                                           bottom: BorderSide(
-                                            color: Colors.white.withOpacity(0.15),
+                                            color: Colors.white.withValues(alpha:0.15),
                                             width: 1,
                                           ),
                                         ),
                                         gradient: playerIndex.isEven
                                             ? LinearGradient(
                                           colors: [
-                                            const Color(0xFF1A1A2E).withOpacity(0.4),
-                                            const Color(0xFF16213E).withOpacity(0.3),
+                                            const Color(0xFF1A1A2E).withValues(alpha:0.4),
+                                            const Color(0xFF16213E).withValues(alpha:0.3),
                                           ],
                                         )
                                             : null,
@@ -627,12 +627,12 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular((MediaQuery.of(context).size.width > 600 ? 65.0 : (MediaQuery.of(context).size.width < 360 ? 45.0 : 55.0)) * 0.25),
                                               border: Border.all(
-                                                color: const Color(0xFFFF8C00).withOpacity(0.6),
+                                                color: const Color(0xFFFF8C00).withValues(alpha:0.6),
                                                 width: 2.5,
                                               ),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: const Color(0xFFFF8C00).withOpacity(0.4),
+                                                  color: const Color(0xFFFF8C00).withValues(alpha:0.4),
                                                   blurRadius: 10,
                                                   offset: const Offset(0, 3),
                                                 ),
@@ -683,13 +683,13 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        const Color(0xFFFF8C00).withOpacity(0.4),
-                                        const Color(0xFFFFB347).withOpacity(0.3),
+                                        const Color(0xFFFF8C00).withValues(alpha:0.4),
+                                        const Color(0xFFFFB347).withValues(alpha:0.3),
                                       ],
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: const Color(0xFFFF8C00).withOpacity(0.2),
+                                        color: const Color(0xFFFF8C00).withValues(alpha:0.2),
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       ),
@@ -703,7 +703,7 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                                         decoration: BoxDecoration(
                                           border: Border(
                                             right: BorderSide(
-                                              color: Colors.white.withOpacity(0.15),
+                                              color: Colors.white.withValues(alpha:0.15),
                                               width: 1,
                                             ),
                                           ),
@@ -733,15 +733,15 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                                     decoration: BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
-                                          color: Colors.white.withOpacity(0.15),
+                                          color: Colors.white.withValues(alpha:0.15),
                                           width: 1,
                                         ),
                                       ),
                                       gradient: playerIndex.isEven
                                           ? LinearGradient(
                                         colors: [
-                                          const Color(0xFF1A1A2E).withOpacity(0.4),
-                                          const Color(0xFF16213E).withOpacity(0.3),
+                                          const Color(0xFF1A1A2E).withValues(alpha:0.4),
+                                          const Color(0xFF16213E).withValues(alpha:0.3),
                                         ],
                                       )
                                           : null,
@@ -755,7 +755,7 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                                           decoration: BoxDecoration(
                                             border: Border(
                                               right: BorderSide(
-                                                color: Colors.white.withOpacity(0.08),
+                                                color: Colors.white.withValues(alpha:0.08),
                                                 width: 1,
                                               ),
                                             ),
@@ -764,20 +764,20 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                                             decoration: BoxDecoration(
                                               gradient: LinearGradient(
                                                 colors: [
-                                                  const Color(0xFF0A0A0F).withOpacity(0.7),
-                                                  const Color(0xFF1A1A2E).withOpacity(0.5),
+                                                  const Color(0xFF0A0A0F).withValues(alpha:0.7),
+                                                  const Color(0xFF1A1A2E).withValues(alpha:0.5),
                                                 ],
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.bottomRight,
                                               ),
                                               borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.03),
                                               border: Border.all(
-                                                color: const Color(0xFFFF8C00).withOpacity(0.2),
+                                                color: const Color(0xFFFF8C00).withValues(alpha:0.2),
                                                 width: 1.5,
                                               ),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.black.withOpacity(0.3),
+                                                  color: Colors.black.withValues(alpha:0.3),
                                                   blurRadius: 4,
                                                   offset: const Offset(0, 2),
                                                 ),
@@ -826,8 +826,8 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    const Color(0xFFFF8C00).withOpacity(0.4),
-                                    const Color(0xFFFFB347).withOpacity(0.3),
+                                    const Color(0xFFFF8C00).withValues(alpha:0.4),
+                                    const Color(0xFFFFB347).withValues(alpha:0.3),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.only(
@@ -835,13 +835,13 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                                 ),
                                 border: Border(
                                   left: BorderSide(
-                                    color: const Color(0xFFFF8C00).withOpacity(0.3),
+                                    color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                                     width: 1.5,
                                   ),
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFFF8C00).withOpacity(0.2),
+                                    color: const Color(0xFFFF8C00).withValues(alpha:0.2),
                                     blurRadius: 8,
                                     offset: const Offset(0, 2),
                                   ),
@@ -875,18 +875,18 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                                       decoration: BoxDecoration(
                                         border: Border(
                                           left: BorderSide(
-                                            color: const Color(0xFFFF8C00).withOpacity(0.25),
+                                            color: const Color(0xFFFF8C00).withValues(alpha:0.25),
                                             width: 1.5,
                                           ),
                                           bottom: BorderSide(
-                                            color: Colors.white.withOpacity(0.15),
+                                            color: Colors.white.withValues(alpha:0.15),
                                             width: 1,
                                           ),
                                         ),
                                         gradient: LinearGradient(
                                           colors: [
-                                            const Color(0xFFFF8C00).withOpacity(0.2),
-                                            const Color(0xFFFFB347).withOpacity(0.1),
+                                            const Color(0xFFFF8C00).withValues(alpha:0.2),
+                                            const Color(0xFFFFB347).withValues(alpha:0.1),
                                           ],
                                           begin: Alignment.centerLeft,
                                           end: Alignment.centerRight,
@@ -901,18 +901,18 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                                           decoration: BoxDecoration(
                                             gradient: LinearGradient(
                                               colors: [
-                                                const Color(0xFFFF8C00).withOpacity(0.3),
-                                                const Color(0xFFFFB347).withOpacity(0.2),
+                                                const Color(0xFFFF8C00).withValues(alpha:0.3),
+                                                const Color(0xFFFFB347).withValues(alpha:0.2),
                                               ],
                                             ),
                                             borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.03),
                                             border: Border.all(
-                                              color: const Color(0xFFFF8C00).withOpacity(0.4),
+                                              color: const Color(0xFFFF8C00).withValues(alpha:0.4),
                                               width: 1.5,
                                             ),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: const Color(0xFFFF8C00).withOpacity(0.3),
+                                                color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                                                 blurRadius: 8,
                                                 offset: const Offset(0, 2),
                                               ),
@@ -965,7 +965,7 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                         borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.05),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFFF8C00).withOpacity(0.4),
+                            color: const Color(0xFFFF8C00).withValues(alpha:0.4),
                             blurRadius: 15,
                             offset: const Offset(0, 5),
                           ),

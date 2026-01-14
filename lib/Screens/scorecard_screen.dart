@@ -190,7 +190,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFFFF8C00).withOpacity(0.1),
+                      const Color(0xFFFF8C00).withValues(alpha:0.1),
                       Colors.transparent,
                     ],
                   ),
@@ -207,7 +207,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF7B2CBF).withOpacity(0.15),
+                      const Color(0xFF7B2CBF).withValues(alpha:0.15),
                       Colors.transparent,
                     ],
                   ),
@@ -232,13 +232,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    const Color(0xFF2D2D44).withOpacity(0.6),
-                                    const Color(0xFF1F1F2E).withOpacity(0.4),
+                                    const Color(0xFF2D2D44).withValues(alpha:0.6),
+                                    const Color(0xFF1F1F2E).withValues(alpha:0.4),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(15),
                                 border: Border.all(
-                                  color: const Color(0xFFFF8C00).withOpacity(0.3),
+                                  color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                                 ),
                               ),
                               child: const Icon(
@@ -273,10 +273,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFFF8C00).withOpacity(0.15),
+                                    color: const Color(0xFFFF8C00).withValues(alpha:0.15),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: const Color(0xFFFF8C00).withOpacity(0.3),
+                                      color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                                     ),
                                   ),
                                   child: Text(
@@ -299,13 +299,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    const Color(0xFF2D2D44).withOpacity(0.6),
-                                    const Color(0xFF1F1F2E).withOpacity(0.4),
+                                    const Color(0xFF2D2D44).withValues(alpha:0.6),
+                                    const Color(0xFF1F1F2E).withValues(alpha:0.4),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(15),
                                 border: Border.all(
-                                  color: const Color(0xFFFF8C00).withOpacity(0.3),
+                                  color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                                 ),
                               ),
                               child: const Icon(
@@ -343,7 +343,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                             Text(
                               'No matches yet',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha:0.7),
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -352,7 +352,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                             Text(
                               'Play your first match to see winners here!',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.5),
+                                color: Colors.white.withValues(alpha:0.5),
                                 fontSize: 14,
                               ),
                             ),
@@ -375,12 +375,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                               gradient: LinearGradient(
                                 colors: isTopThree
                                     ? [
-                                  rankColor.withOpacity(0.2),
-                                  rankColor.withOpacity(0.05),
+                                  rankColor.withValues(alpha:0.2),
+                                  rankColor.withValues(alpha:0.05),
                                 ]
                                     : [
-                                  const Color(0xFF2D2D44).withOpacity(0.6),
-                                  const Color(0xFF1F1F2E).withOpacity(0.4),
+                                  const Color(0xFF2D2D44).withValues(alpha:0.6),
+                                  const Color(0xFF1F1F2E).withValues(alpha:0.4),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -388,21 +388,21 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: isTopThree
-                                    ? rankColor.withOpacity(0.5)
-                                    : const Color(0xFFFF8C00).withOpacity(0.2),
+                                    ? rankColor.withValues(alpha:0.5)
+                                    : const Color(0xFFFF8C00).withValues(alpha:0.2),
                                 width: isTopThree ? 2 : 1,
                               ),
                               boxShadow: isTopThree
                                   ? [
                                 BoxShadow(
-                                  color: rankColor.withOpacity(0.3),
+                                  color: rankColor.withValues(alpha:0.3),
                                   blurRadius: 15,
                                   offset: const Offset(0, 5),
                                 ),
                               ]
                                   : [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
+                                  color: Colors.black.withValues(alpha:0.3),
                                   blurRadius: 10,
                                   offset: const Offset(0, 5),
                                 ),
@@ -419,7 +419,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                                         ? LinearGradient(
                                       colors: [
                                         rankColor,
-                                        rankColor.withOpacity(0.7),
+                                        rankColor.withValues(alpha:0.7),
                                       ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
@@ -433,8 +433,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: isTopThree
-                                          ? rankColor.withOpacity(0.5)
-                                          : const Color(0xFFFF8C00).withOpacity(0.3),
+                                          ? rankColor.withValues(alpha:0.5)
+                                          : const Color(0xFFFF8C00).withValues(alpha:0.3),
                                       width: 2,
                                     ),
                                   ),
@@ -459,8 +459,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                                     borderRadius: BorderRadius.circular(15),
                                     border: Border.all(
                                       color: isTopThree
-                                          ? rankColor.withOpacity(0.6)
-                                          : const Color(0xFFFF8C00).withOpacity(0.4),
+                                          ? rankColor.withValues(alpha:0.6)
+                                          : const Color(0xFFFF8C00).withValues(alpha:0.4),
                                       width: 2,
                                     ),
                                   ),
@@ -492,7 +492,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                                       Text(
                                         _formatDate(winner.matchDate),
                                         style: TextStyle(
-                                          color: Colors.white.withOpacity(0.6),
+                                          color: Colors.white.withValues(alpha:0.6),
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -507,7 +507,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                                     Text(
                                       'Score',
                                       style: TextStyle(
-                                        color: Colors.white.withOpacity(0.5),
+                                        color: Colors.white.withValues(alpha:0.5),
                                         fontSize: 10,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -522,21 +522,21 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                                         gradient: isTopThree
                                             ? LinearGradient(
                                           colors: [
-                                            rankColor.withOpacity(0.3),
-                                            rankColor.withOpacity(0.15),
+                                            rankColor.withValues(alpha:0.3),
+                                            rankColor.withValues(alpha:0.15),
                                           ],
                                         )
                                             : LinearGradient(
                                           colors: [
-                                            const Color(0xFF1A1A2E).withOpacity(0.8),
-                                            const Color(0xFF0A0A0F).withOpacity(0.6),
+                                            const Color(0xFF1A1A2E).withValues(alpha:0.8),
+                                            const Color(0xFF0A0A0F).withValues(alpha:0.6),
                                           ],
                                         ),
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
                                           color: isTopThree
-                                              ? rankColor.withOpacity(0.4)
-                                              : Colors.white.withOpacity(0.1),
+                                              ? rankColor.withValues(alpha:0.4)
+                                              : Colors.white.withValues(alpha:0.1),
                                         ),
                                       ),
                                       child: Text(
@@ -544,7 +544,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                                         style: TextStyle(
                                           color: isTopThree
                                               ? rankColor
-                                              : Colors.white.withOpacity(0.7),
+                                              : Colors.white.withValues(alpha:0.7),
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
                                         ),
