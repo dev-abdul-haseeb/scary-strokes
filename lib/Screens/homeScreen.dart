@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scary_strokes/Screens/startGameScreen.dart';
 
 import '../Widgets/homeScreenButtons.dart';
 
@@ -203,7 +204,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         icon: Icons.sports_golf,
                         gradientColors: const [Color(0xFFFF8C00), Color(0xFFE63946)],
                         glowColor: const Color(0xFFFF8C00),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>StartGameScreen()));
+                        },
                         delay: 0,
                       ),
 
