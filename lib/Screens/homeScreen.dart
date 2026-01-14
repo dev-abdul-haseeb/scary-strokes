@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scary_strokes/Screens/scorecard_screen.dart';
 import 'package:scary_strokes/Screens/startGameScreen.dart';
+import 'package:scary_strokes/Screens/tips_to_play_screen.dart';
 
 import '../Widgets/homeScreenButtons.dart';
 
@@ -242,7 +243,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         icon: Icons.lightbulb_outline,
                         gradientColors: const [Color(0xFF00B4D8), Color(0xFF48CAE4)],
                         glowColor: const Color(0xFF00B4D8),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const TipsScreen()),
+                          );
+                        },
                         delay: 200,
                       ),
 

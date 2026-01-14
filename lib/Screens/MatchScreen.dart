@@ -136,7 +136,7 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
     }
 
     var sortedPlayers = widget.players.toList()
-      ..sort((a, b) => finalScores[a.name]!.compareTo(finalScores[b.name]!));
+      ..sort((a, b) => finalScores[a?.name]!.compareTo(finalScores[b.name]!));
 
     showDialog(
       context: context,

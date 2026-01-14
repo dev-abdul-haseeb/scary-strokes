@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scary_strokes/Screens/splash_screen.dart';
 import 'Screens/homeScreen.dart';
 
 void main() {
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Scary Strokes',
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home: const SplashScreen(),
     );
   }
 }

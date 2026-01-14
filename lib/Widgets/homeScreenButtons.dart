@@ -8,7 +8,7 @@ class EnhancedHomeButton extends StatefulWidget {
   final VoidCallback onTap;
   final int delay;
 
-  const EnhancedHomeButton({
+  const EnhancedHomeButton({super.key,
     required this.title,
     required this.icon,
     required this.gradientColors,

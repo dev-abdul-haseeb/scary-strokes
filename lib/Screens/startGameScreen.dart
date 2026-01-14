@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:scary_strokes/Screens/MatchScreen.dart';
 
 import '../Widgets/homeScreenButtons.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class StartGameScreen extends StatefulWidget {
   const StartGameScreen({super.key});
@@ -62,7 +64,14 @@ class _StartGameScreenState extends State<StartGameScreen> with TickerProviderSt
     });
   }
 
-  void _updatePlayerIcon(int index, int iconIndex) {
+  void _updatePlayerIcon(int index, int iconIndex, String? customImagePath) {
+    if (customImagePath != null) {
+      setState(() {
+        players[index].customImagePath = customImagePath;
+      });
+      return;
+    }
+
     setState(() {
       players[index].iconIndex = iconIndex;
     });
@@ -119,7 +128,7 @@ class _StartGameScreenState extends State<StartGameScreen> with TickerProviderSt
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFFFF8C00).withOpacity(0.1),
+                      const Color(0xFFFF8C00).withValues(alpha:0.1),
                       Colors.transparent,
                     ],
                   ),
@@ -136,7 +145,7 @@ class _StartGameScreenState extends State<StartGameScreen> with TickerProviderSt
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF7B2CBF).withOpacity(0.15),
+                      const Color(0xFF7B2CBF).withValues(alpha:0.15),
                       Colors.transparent,
                     ],
                   ),
@@ -161,13 +170,13 @@ class _StartGameScreenState extends State<StartGameScreen> with TickerProviderSt
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    const Color(0xFF2D2D44).withOpacity(0.6),
-                                    const Color(0xFF1F1F2E).withOpacity(0.4),
+                                    const Color(0xFF2D2D44).withValues(alpha:0.6),
+                                    const Color(0xFF1F1F2E).withValues(alpha:0.4),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(15),
                                 border: Border.all(
-                                  color: const Color(0xFFFF8C00).withOpacity(0.3),
+                                  color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                                 ),
                               ),
                               child: const Icon(
@@ -202,10 +211,10 @@ class _StartGameScreenState extends State<StartGameScreen> with TickerProviderSt
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFFF8C00).withOpacity(0.15),
+                                    color: const Color(0xFFFF8C00).withValues(alpha:0.15),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: const Color(0xFFFF8C00).withOpacity(0.3),
+                                      color: const Color(0xFFFF8C00).withValues(alpha:0.3),
                                     ),
                                   ),
                                   child: Text(
@@ -236,7 +245,7 @@ class _StartGameScreenState extends State<StartGameScreen> with TickerProviderSt
                             canRemove: players.length > 1,
                             onRemove: () => _removePlayer(index),
                             onNameChanged: (name) => _updatePlayerName(index, name),
-                            onIconChanged: (iconIndex) => _updatePlayerIcon(index, iconIndex),
+                            onIconChanged: (iconIndex, customImagePath) => _updatePlayerIcon(index, iconIndex, customImagePath),
                           );
                         },
                       ),
@@ -255,18 +264,18 @@ class _StartGameScreenState extends State<StartGameScreen> with TickerProviderSt
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      const Color(0xFF2D2D44).withOpacity(0.6),
-                                      const Color(0xFF1F1F2E).withOpacity(0.4),
+                                      const Color(0xFF2D2D44).withValues(alpha:0.6),
+                                      const Color(0xFF1F1F2E).withValues(alpha:0.4),
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: const Color(0xFF7B2CBF).withOpacity(0.5),
+                                    color: const Color(0xFF7B2CBF).withValues(alpha:0.5),
                                     width: 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF7B2CBF).withOpacity(0.2),
+                                      color: const Color(0xFF7B2CBF).withValues(alpha:0.2),
                                       blurRadius: 15,
                                       offset: const Offset(0, 5),
                                     ),
@@ -325,9 +334,21 @@ class _StartGameScreenState extends State<StartGameScreen> with TickerProviderSt
 class PlayerData {
   String name;
   int iconIndex;
+  String? customImagePath; // Add this for custom images
 
-  PlayerData({required this.name, required this.iconIndex});
+  PlayerData({
+    required this.name,
+    required this.iconIndex,
+    this.customImagePath,
+  });
+
+  // Helper method to get display image
+  String? get displayImagePath {
+    return customImagePath;
+  }
 }
+
+
 
 class PlayerCard extends StatefulWidget {
   final PlayerData player;
@@ -335,7 +356,7 @@ class PlayerCard extends StatefulWidget {
   final bool canRemove;
   final VoidCallback onRemove;
   final Function(String) onNameChanged;
-  final Function(int) onIconChanged;
+  final Function(int, String?) onIconChanged; // Updated function
 
   const PlayerCard({
     super.key,
@@ -356,6 +377,8 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
   bool _showIconPicker = false;
   late AnimationController _slideController;
   late Animation<double> _slideAnimation;
+  final ImagePicker _picker = ImagePicker();
+  File? _customImage;
 
   @override
   void initState() {
@@ -389,6 +412,40 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
     });
   }
 
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        imageQuality: 80,
+        maxWidth: 400,
+        maxHeight: 400,
+      );
+
+      if (pickedFile != null) {
+        setState(() {
+          _customImage = File(pickedFile.path);
+        });
+        widget.onIconChanged(-1, pickedFile.path); // -1 indicates custom image
+        _toggleIconPicker();
+      }
+    } catch (e) {
+      _showSnackBar('Error picking image: $e', isError: true);
+      print('Error picking image: $e');
+    }
+  }
+
+  void _showSnackBar(String message, {required bool isError}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? const Color(0xFFE63946) : const Color(0xFF4CAF50),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -396,19 +453,19 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF2D2D44).withOpacity(0.6),
-            const Color(0xFF1F1F2E).withOpacity(0.4),
+            const Color(0xFF2D2D44).withValues(alpha:0.6),
+            const Color(0xFF1F1F2E).withValues(alpha:0.4),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFFF8C00).withOpacity(0.2),
+          color: const Color(0xFFFF8C00).withValues(alpha:0.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha:0.3),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -420,7 +477,7 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Player icon
+                // Player icon - Show custom image if available
                 GestureDetector(
                   onTap: _toggleIconPicker,
                   child: Container(
@@ -429,18 +486,18 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          const Color(0xFF1A1A2E).withOpacity(0.8),
-                          const Color(0xFF0A0A0F).withOpacity(0.6),
+                          const Color(0xFF1A1A2E).withValues(alpha:0.8),
+                          const Color(0xFF0A0A0F).withValues(alpha:0.6),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: const Color(0xFFFF8C00).withOpacity(0.4),
+                        color: const Color(0xFFFF8C00).withValues(alpha:0.4),
                         width: 2.5,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFFF8C00).withOpacity(0.2),
+                          color: const Color(0xFFFF8C00).withValues(alpha:0.2),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
@@ -450,7 +507,14 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(15),
-                          child: Image.asset(
+                          child: _customImage != null
+                              ? Image.file(
+                            _customImage!,
+                            fit: BoxFit.cover,
+                            width: 75,
+                            height: 75,
+                          )
+                              : Image.asset(
                             'Assets/${widget.player.iconIndex + 1}.png',
                             fit: BoxFit.cover,
                             width: 75,
@@ -464,7 +528,7 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF0A0A0F).withOpacity(0.8),
+                              color: const Color(0xFF0A0A0F).withValues(alpha:0.8),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -489,7 +553,7 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
                       Text(
                         'Player ${widget.index + 1}',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.5),
+                          color: Colors.white.withValues(alpha:0.5),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
@@ -508,7 +572,7 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
                         decoration: InputDecoration(
                           hintText: 'Enter name',
                           hintStyle: TextStyle(
-                            color: Colors.white.withOpacity(0.3),
+                            color: Colors.white.withValues(alpha:0.3),
                             fontWeight: FontWeight.w500,
                           ),
                           border: InputBorder.none,
@@ -529,13 +593,13 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFFE63946).withOpacity(0.3),
-                            const Color(0xFFE63946).withOpacity(0.2),
+                            const Color(0xFFE63946).withValues(alpha:0.3),
+                            const Color(0xFFE63946).withValues(alpha:0.2),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: const Color(0xFFE63946).withOpacity(0.5),
+                          color: const Color(0xFFE63946).withValues(alpha:0.5),
                         ),
                       ),
                       child: const Icon(
@@ -559,13 +623,13 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      const Color(0xFF1A1A2E).withOpacity(0.6),
-                      const Color(0xFF0A0A0F).withOpacity(0.4),
+                      const Color(0xFF1A1A2E).withValues(alpha:0.6),
+                      const Color(0xFF0A0A0F).withValues(alpha:0.4),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(
-                    color: const Color(0xFFFF8C00).withOpacity(0.2),
+                    color: const Color(0xFFFF8C00).withValues(alpha:0.2),
                   ),
                 ),
                 child: Column(
@@ -574,20 +638,127 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
                     Text(
                       'Choose Avatar',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha:0.7),
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.5,
                       ),
                     ),
                     const SizedBox(height: 12),
+
+                    // Camera and Gallery Options
+                    Row(
+                      children: [
+                        // Camera Option
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _pickImage(ImageSource.camera),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              margin: const EdgeInsets.only(right: 6),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    const Color(0xFFFF8C00).withValues(alpha:0.2),
+                                    const Color(0xFFFF8C00).withValues(alpha:0.1),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: const Color(0xFFFF8C00).withValues(alpha:0.3),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.camera_alt_rounded,
+                                    color: const Color(0xFFFF8C00),
+                                    size: 28,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  const Text(
+                                    'Camera',
+                                    style: TextStyle(
+                                      color: Color(0xFFFF8C00),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // Gallery Option
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _pickImage(ImageSource.gallery),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              margin: const EdgeInsets.only(left: 6),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    const Color(0xFF7B2CBF).withValues(alpha:0.2),
+                                    const Color(0xFF7B2CBF).withValues(alpha:0.1),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: const Color(0xFF7B2CBF).withValues(alpha:0.3),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.photo_library_rounded,
+                                    color: const Color(0xFF7B2CBF),
+                                    size: 28,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  const Text(
+                                    'Gallery',
+                                    style: TextStyle(
+                                      color: Color(0xFF7B2CBF),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+                    const Divider(color: Colors.white24, height: 1),
+                    const SizedBox(height: 16),
+
+                    Text(
+                      'Default Icons',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha:0.7),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Default icons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: List.generate(4, (index) {
-                        bool isSelected = widget.player.iconIndex == index;
+                        bool isSelected = widget.player.iconIndex == index && _customImage == null;
                         return GestureDetector(
                           onTap: () {
-                            widget.onIconChanged(index);
+                            setState(() {
+                              _customImage = null;
+                            });
+                            widget.onIconChanged(index, null);
                             Future.delayed(const Duration(milliseconds: 200), () {
                               _toggleIconPicker();
                             });
@@ -599,21 +770,21 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  const Color(0xFF0A0A0F).withOpacity(0.8),
-                                  const Color(0xFF1A1A2E).withOpacity(0.6),
+                                  const Color(0xFF0A0A0F).withValues(alpha:0.8),
+                                  const Color(0xFF1A1A2E).withValues(alpha:0.6),
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(
                                 color: isSelected
                                     ? const Color(0xFFFF8C00)
-                                    : Colors.white.withOpacity(0.2),
+                                    : Colors.white.withValues(alpha:0.2),
                                 width: isSelected ? 3 : 1.5,
                               ),
                               boxShadow: isSelected
                                   ? [
                                 BoxShadow(
-                                  color: const Color(0xFFFF8C00).withOpacity(0.4),
+                                  color: const Color(0xFFFF8C00).withValues(alpha:0.4),
                                   blurRadius: 12,
                                   spreadRadius: 2,
                                 ),
