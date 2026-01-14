@@ -107,7 +107,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
+
+                      //Mini Golf Scorecard
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFF8C00).withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: const Color(0xFFFF8C00).withOpacity(0.3),
+                          ),
+                        ),
+                        child: const Text(
+                          'Mini Golf Scorecard',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFFFFB347),
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+
                       // Animated logo
                       AnimatedBuilder(
                         animation: _floatAnimation,
@@ -116,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             offset: Offset(0, _floatAnimation.value),
                             child: Container(
                               width: 350,
-                              height: 250,
+                              height: 350,
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(30),
@@ -152,49 +178,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         },
                       ),
 
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 20),
 
-                      // Title with glow effect
-                      ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: [Color(0xFFFF8C00), Color(0xFFFFB347)],
-                        ).createShader(bounds),
-                        child: const Text(
-                          'Scary Strokes',
-                          style: TextStyle(
-                            fontSize: 42,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      //Mini Golf Scorecard
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFF8C00).withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: const Color(0xFFFF8C00).withOpacity(0.3),
-                          ),
-                        ),
-                        child: const Text(
-                          'Mini Golf Scorecard',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFFFFB347),
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
 
                       const Spacer(),
 
