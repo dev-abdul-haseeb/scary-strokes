@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scary_strokes/Screens/scorecard_screen.dart';
 import 'package:scary_strokes/Screens/startGameScreen.dart';
 
 import '../Widgets/homeScreenButtons.dart';
@@ -202,7 +203,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         icon: Icons.emoji_events,
                         gradientColors: const [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
                         glowColor: const Color(0xFF7B2CBF),
-                        onTap: () {},
+                        onTap: () {
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => ScoreboardCard(
+                            //       currentHole: 5,
+                            //       totalHoles: 18,
+                            //       players: [
+                            //         PlayerScoreData(
+                            //           name: "Sarah",
+                            //           iconIndex: 0,
+                            //           currentScore: 3,
+                            //           totalScore: 18,
+                            //           isLeader: true,
+                            //         ),
+                            //         PlayerScoreData(
+                            //           name: "Mike",
+                            //           iconIndex: 1,
+                            //           currentScore: 4,
+                            //           totalScore: 19,
+                            //           isLeader: false,
+                            //         ),
+                            //         // Add more players...
+                            //       ],
+                            //     ),
+                            //   ),
+                            // );\
+                        Navigator.push(context, MaterialPageRoute(builder: (_)=>LeaderboardScreen()));
+                        },
                         delay: 100,
                       ),
 
