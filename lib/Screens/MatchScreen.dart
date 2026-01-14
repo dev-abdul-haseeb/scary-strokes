@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:scary_strokes/Screens/startGameScreen.dart';
 
@@ -14,22 +13,25 @@ class StartMatchScreen extends StatefulWidget {
 }
 
 class _StartMatchScreenState extends State<StartMatchScreen> with TickerProviderStateMixin {
-  int currentHole = 1;
   final int totalHoles = 18;
   Map<int, Map<String, int>> holeScores = {}; // {holeNumber: {playerName: strokes}}
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
 
-  Map<String, TextEditingController> strokeControllers = {};
+  Map<String, Map<int, TextEditingController>> strokeControllers = {};
   bool isSaving = false;
+  final ScrollController _horizontalScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize controllers for each player
+    // Initialize controllers for each player and hole
     for (var player in widget.players) {
-      strokeControllers[player.name] = TextEditingController();
+      strokeControllers[player.name] = {};
+      for (int hole = 1; hole <= totalHoles; hole++) {
+        strokeControllers[player.name]![hole] = TextEditingController();
+      }
     }
 
     _fadeController = AnimationController(
@@ -44,56 +46,34 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
 
   @override
   void dispose() {
-    for (var controller in strokeControllers.values) {
-      controller.dispose();
+    for (var playerControllers in strokeControllers.values) {
+      for (var controller in playerControllers.values) {
+        controller.dispose();
+      }
     }
     _fadeController.dispose();
+    _horizontalScrollController.dispose();
     super.dispose();
   }
 
-  void _saveHoleScore() {
-    // Validate all inputs
-    Map<String, int> currentHoleScores = {};
+  Future<void> _saveMatchToDatabase() async {
+    // Validate all inputs first
     for (var player in widget.players) {
-      String strokeText = strokeControllers[player.name]!.text.trim();
-      if (strokeText.isEmpty) {
-        _showSnackBar('Please enter strokes for ${player.name}', isError: true);
-        return;
-      }
+      for (int hole = 1; hole <= totalHoles; hole++) {
+        String strokeText = strokeControllers[player.name]![hole]!.text.trim();
+        if (strokeText.isEmpty) {
+          _showSnackBar('Please enter strokes for ${player.name} on Hole $hole', isError: true);
+          return;
+        }
 
-      int? strokes = int.tryParse(strokeText);
-      if (strokes == null || strokes < 1) {
-        _showSnackBar('Invalid stroke count for ${player.name}. Must be at least 1.', isError: true);
-        return;
+        int? strokes = int.tryParse(strokeText);
+        if (strokes == null || strokes < 1) {
+          _showSnackBar('Invalid stroke count for ${player.name} on Hole $hole', isError: true);
+          return;
+        }
       }
-
-      // Additional check to prevent zero values
-      if (strokes == 0) {
-        _showSnackBar('Stroke count cannot be 0 for ${player.name}', isError: true);
-        return;
-      }
-
-      currentHoleScores[player.name] = strokes;
     }
 
-    // Save scores for current hole
-    setState(() {
-      holeScores[currentHole] = currentHoleScores;
-
-      if (currentHole < totalHoles) {
-        currentHole++;
-        // Clear inputs for next hole
-        for (var controller in strokeControllers.values) {
-          controller.clear();
-        }
-        _showSnackBar('Hole ${currentHole-1} recorded', isError: false);
-      } else {
-        // Game finished
-        _saveMatchToDatabase();
-      }
-    });
-  }
-  Future<void> _saveMatchToDatabase() async {
     setState(() {
       isSaving = true;
     });
@@ -108,7 +88,13 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
       for (var player in widget.players) {
         int totalStrokes = 0;
         for (int hole = 1; hole <= totalHoles; hole++) {
-          totalStrokes += holeScores[hole]![player.name]!;
+          int strokes = int.parse(strokeControllers[player.name]![hole]!.text.trim());
+          totalStrokes += strokes;
+
+          if (!holeScores.containsKey(hole)) {
+            holeScores[hole] = {};
+          }
+          holeScores[hole]![player.name] = strokes;
         }
 
         int playerId = await dbHelper.createPlayerScore(
@@ -385,8 +371,11 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
 
   int _getTotalStrokes(String playerName) {
     int total = 0;
-    for (int hole = 1; hole < currentHole; hole++) {
-      total += holeScores[hole]![playerName] ?? 0;
+    for (int hole = 1; hole <= totalHoles; hole++) {
+      String text = strokeControllers[playerName]![hole]!.text.trim();
+      if (text.isNotEmpty) {
+        total += int.tryParse(text) ?? 0;
+      }
     }
     return total;
   }
@@ -510,188 +499,262 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                           ),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ShaderMask(
-                                  shaderCallback: (bounds) => const LinearGradient(
-                                    colors: [Color(0xFFFF8C00), Color(0xFFFFB347)],
-                                  ).createShader(bounds),
-                                  child: Text(
-                                    'Hole $currentHole',
-                                    style: const TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                            child: ShaderMask(
+                              shaderCallback: (bounds) => const LinearGradient(
+                                colors: [Color(0xFFFF8C00), Color(0xFFFFB347)],
+                              ).createShader(bounds),
+                              child: const Text(
+                                'Scorecard',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
-                                const SizedBox(height: 4),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFFF8C00).withOpacity(0.15),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: const Color(0xFFFF8C00).withOpacity(0.3),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    '$currentHole of $totalHoles',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFFFFB347),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
 
-                    // Progress indicator
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: LinearProgressIndicator(
-                          value: (currentHole - 1) / totalHoles,
-                          backgroundColor: const Color(0xFF2D2D44),
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            Color(0xFFFF8C00),
-                          ),
-                          minHeight: 8,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Player stroke inputs
+                    // Scorecard Sheet
                     Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        itemCount: widget.players.length,
-                        itemBuilder: (context, index) {
-                          final player = widget.players[index];
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  const Color(0xFF2D2D44).withOpacity(0.6),
-                                  const Color(0xFF1F1F2E).withOpacity(0.4),
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFF2D2D44).withOpacity(0.8),
+                              const Color(0xFF1F1F2E).withOpacity(0.6),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: const Color(0xFFFF8C00).withOpacity(0.3),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            // Header Row
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    const Color(0xFFFF8C00).withOpacity(0.2),
+                                    const Color(0xFFFFB347).withOpacity(0.1),
+                                  ],
+                                ),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  // Player column header
+                                  Container(
+                                    width: 120,
+                                    padding: const EdgeInsets.all(12),
+                                    child: const Text(
+                                      'Player',
+                                      style: TextStyle(
+                                        color: Color(0xFFFFB347),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+
+                                  // Holes headers (scrollable)
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      controller: _horizontalScrollController,
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        children: List.generate(totalHoles, (index) {
+                                          return Container(
+                                            width: 60,
+                                            padding: const EdgeInsets.all(12),
+                                            child: Text(
+                                              '${index + 1}',
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                color: Color(0xFFFFB347),
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                  ),
+
+                                  // Total column header
+                                  Container(
+                                    width: 70,
+                                    padding: const EdgeInsets.all(12),
+                                    child: const Text(
+                                      'Total',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color(0xFFFFB347),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
                                 ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
                               ),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: const Color(0xFFFF8C00).withOpacity(0.2),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
                             ),
-                            child: Row(
-                              children: [
-                                // Player avatar
-                                Container(
-                                  width: 60,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    border: Border.all(
-                                      color: const Color(0xFFFF8C00).withOpacity(0.4),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(13),
-                                    child: Image.asset(
-                                      'Assets/${player.iconIndex + 1}.png',
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
 
-                                // Player info
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        player.name,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
+                            // Player Rows
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: widget.players.length,
+                                itemBuilder: (context, playerIndex) {
+                                  final player = widget.players[playerIndex];
+
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: Colors.white.withOpacity(0.1),
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Total: ${_getTotalStrokes(player.name)}',
-                                        style: TextStyle(
-                                          color: Colors.white.withOpacity(0.6),
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        // Player info (fixed left)
+                                        Container(
+                                          width: 120,
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                            horizontal: 8,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 40,
+                                                height: 40,
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  border: Border.all(
+                                                    color: const Color(0xFFFF8C00).withOpacity(0.4),
+                                                  ),
+                                                ),
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  child: Image.asset(
+                                                    'Assets/${player.iconIndex + 1}.png',
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  player.name,
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
 
-                                // Stroke input
-                                Container(
-                                  width: 80,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        const Color(0xFF1A1A2E).withOpacity(0.8),
-                                        const Color(0xFF0A0A0F).withOpacity(0.6),
+                                        // Hole scores (scrollable middle)
+                                        Expanded(
+                                          child: SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            controller: _horizontalScrollController,
+                                            child: Row(
+                                              children: List.generate(totalHoles, (holeIndex) {
+                                                final hole = holeIndex + 1;
+                                                return Container(
+                                                  width: 60,
+                                                  padding: const EdgeInsets.all(8),
+                                                  child: Container(
+                                                    height: 45,
+                                                    decoration: BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                        colors: [
+                                                          const Color(0xFF1A1A2E).withOpacity(0.8),
+                                                          const Color(0xFF0A0A0F).withOpacity(0.6),
+                                                        ],
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(8),
+                                                      border: Border.all(
+                                                        color: const Color(0xFFFF8C00).withOpacity(0.2),
+                                                      ),
+                                                    ),
+                                                    child: TextField(
+                                                      controller: strokeControllers[player.name]![hole],
+                                                      keyboardType: TextInputType.number,
+                                                      textAlign: TextAlign.center,
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 18,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                      decoration: const InputDecoration(
+                                                        hintText: '-',
+                                                        hintStyle: TextStyle(
+                                                          color: Colors.white30,
+                                                        ),
+                                                        border: InputBorder.none,
+                                                        contentPadding: EdgeInsets.zero,
+                                                      ),
+                                                      onChanged: (_) => setState(() {}),
+                                                    ),
+                                                  ),
+                                                );
+                                              }),
+                                            ),
+                                          ),
+                                        ),
+
+                                        // Total (fixed right)
+                                        Container(
+                                          width: 70,
+                                          padding: const EdgeInsets.all(12),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 8),
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                colors: [
+                                                  const Color(0xFFFF8C00).withOpacity(0.2),
+                                                  const Color(0xFFFFB347).withOpacity(0.1),
+                                                ],
+                                              ),
+                                              borderRadius: BorderRadius.circular(8),
+                                              border: Border.all(
+                                                color: const Color(0xFFFF8C00).withOpacity(0.4),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              '${_getTotalStrokes(player.name)}',
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                color: Color(0xFFFFB347),
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: const Color(0xFFFF8C00).withOpacity(0.3),
-                                    ),
-                                  ),
-                                  child: TextField(
-                                    controller: strokeControllers[player.name],
-                                    keyboardType: TextInputType.number,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    decoration: const InputDecoration(
-                                      hintText: '0',
-                                      hintStyle: TextStyle(
-                                        color: Colors.white30,
-                                      ),
-                                      border: InputBorder.none,
-                                      contentPadding: EdgeInsets.zero,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                  );
+                                },
+                              ),
                             ),
-                          );
-                        },
+                          ],
+                        ),
                       ),
                     ),
 
@@ -699,7 +762,7 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: GestureDetector(
-                        onTap: isSaving ? null : _saveHoleScore,
+                        onTap: isSaving ? null : _saveMatchToDatabase,
                         child: Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 18),
@@ -739,20 +802,14 @@ class _StartMatchScreenState extends State<StartMatchScreen> with TickerProvider
                                   ),
                                 )
                               else
-                                Icon(
-                                  currentHole == totalHoles
-                                      ? Icons.flag
-                                      : Icons.arrow_forward,
+                                const Icon(
+                                  Icons.flag,
                                   color: Colors.white,
                                   size: 24,
                                 ),
                               const SizedBox(width: 12),
                               Text(
-                                isSaving
-                                    ? 'Saving...'
-                                    : currentHole == totalHoles
-                                    ? 'Finish Match'
-                                    : 'Next Hole',
+                                isSaving ? 'Saving...' : 'Finish Match',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
