@@ -324,211 +324,209 @@ class _StartMatchScreenState extends State<StartMatchScreen>
         child: SafeArea(
           child: FadeTransition(
             opacity: _fadeAnimation,
-            child: Column(
+            child: Stack(
               children: [
-                Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.05),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              backgroundColor: const Color(0xFF2D2D44),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  screenWidth * 0.04,
-                                ),
-                              ),
-                              title: Text(
-                                'Exit Match?',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: screenWidth * 0.05,
-                                ),
-                              ),
-                              content: Text(
-                                'All progress will be lost.',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: screenWidth * 0.04,
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text(
-                                    'Cancel',
+                // Main scrollable content
+                Column(
+                  children: [
+                    // Top bar
+                    Padding(
+                      padding: EdgeInsets.all(screenWidth * 0.05),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  backgroundColor: const Color(0xFF2D2D44),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      screenWidth * 0.04,
+                                    ),
+                                  ),
+                                  title: Text(
+                                    'Exit Match?',
                                     style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: screenWidth * 0.05,
+                                    ),
+                                  ),
+                                  content: Text(
+                                    'All progress will be lost.',
+                                    style: TextStyle(
+                                      color: Colors.white70,
                                       fontSize: screenWidth * 0.04,
                                     ),
                                   ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text(
-                                    'Exit',
-                                    style: TextStyle(
-                                      color: const Color(0xFFE63946),
-                                      fontSize: screenWidth * 0.04,
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                          fontSize: screenWidth * 0.04,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        'Exit',
+                                        style: TextStyle(
+                                          color: const Color(0xFFE63946),
+                                          fontSize: screenWidth * 0.04,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(screenWidth * 0.03),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                const Color(0xFF2D2D44).withValues(alpha: 0.6),
-                                const Color(0xFF1F1F2E).withValues(alpha: 0.4),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(
-                              screenWidth * 0.04,
-                            ),
-                            border: Border.all(
-                              color: const Color(
-                                0xFFFFD700,
-                              ).withValues(alpha: 0.3),
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.arrow_back,
-                            color: const Color(0xFFFFD700),
-                            size: screenWidth * 0.06,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: screenWidth * 0.04),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ShaderMask(
-                              shaderCallback: (bounds) => const LinearGradient(
-                                colors: [Color(0xFFFFD700), Color(0xFFFFB347)],
-                              ).createShader(bounds),
-                              child: Text(
-                                'Scorecard',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.07,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: screenHeight * 0.005),
-                            Text(
-                              'Scary Strokes - Indoor Blacklight Mini-Golf',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: screenWidth * 0.03,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.025,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          const Color(0xFF2D2D44).withValues(alpha: 0.8),
-                          const Color(0xFF1F1F2E).withValues(alpha: 0.6),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(screenWidth * 0.05),
-                      border: Border.all(
-                        color: const Color(0xFFFFD700).withValues(alpha: 0.3),
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Column(
-                          children: [
-                            Container(
-                              width: playerColumnWidth,
-                              height: 60.0,
-                              padding: EdgeInsets.symmetric(
-                                vertical: screenHeight * 0.015,
-                                horizontal: screenWidth * 0.03,
-                              ),
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(screenWidth * 0.03),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    const Color(
-                                      0xFFFFD700,
-                                    ).withValues(alpha: 0.4),
-                                    const Color(
-                                      0xFFFFB347,
-                                    ).withValues(alpha: 0.3),
+                                    const Color(0xFF2D2D44).withValues(alpha: 0.6),
+                                    const Color(0xFF1F1F2E).withValues(alpha: 0.4),
                                   ],
                                 ),
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(screenWidth * 0.05),
+                                borderRadius: BorderRadius.circular(
+                                  screenWidth * 0.04,
                                 ),
-                                border: Border(
-                                  right: BorderSide(
-                                    color: const Color(
-                                      0xFFFFD700,
-                                    ).withValues(alpha: 0.3),
-                                    width: 1.5,
-                                  ),
+                                border: Border.all(
+                                  color: const Color(
+                                    0xFFFFD700,
+                                  ).withValues(alpha: 0.3),
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(
-                                      0xFFFFD700,
-                                    ).withValues(alpha: 0.2),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
                               ),
-                              child: Center(
-                                child: Text(
-                                  'Player',
-                                  style: TextStyle(
-                                    color: const Color(0xFFFFB347),
-                                    fontSize: screenWidth > 600 ? 20.0 : 18.0,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
+                              child: Icon(
+                                Icons.arrow_back,
+                                color: const Color(0xFFFFD700),
+                                size: screenWidth * 0.06,
                               ),
                             ),
-                            Expanded(
-                              child: SizedBox(
-                                width: playerColumnWidth,
-                                child: ListView.builder(
-                                  itemCount: widget.players.length,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemBuilder: (context, playerIndex) {
-                                    final player = widget.players[playerIndex];
+                          ),
+                          SizedBox(width: screenWidth * 0.04),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ShaderMask(
+                                  shaderCallback: (bounds) => const LinearGradient(
+                                    colors: [Color(0xFFFFD700), Color(0xFFFFB347)],
+                                  ).createShader(bounds),
+                                  child: Text(
+                                    'Scorecard',
+                                    style: TextStyle(
+                                      fontSize: screenWidth * 0.07,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: screenHeight * 0.005),
+                                Text(
+                                  'Scary Strokes - Indoor Blacklight Mini-Golf',
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: screenWidth * 0.03,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Scrollable match table
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.only(
+                          bottom: screenHeight * 0.25, // Space for floating elements
+                        ),
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.025,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                const Color(0xFF2D2D44).withValues(alpha: 0.8),
+                                const Color(0xFF1F1F2E).withValues(alpha: 0.6),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                            border: Border.all(
+                              color: const Color(0xFFFFD700).withValues(alpha: 0.3),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.3),
+                                blurRadius: 15,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              // Player column
+                              Column(
+                                children: [
+                                  Container(
+                                    width: playerColumnWidth,
+                                    height: 80.0,
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: screenHeight * 0.015,
+                                      horizontal: screenWidth * 0.03,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          const Color(0xFFFFD700).withValues(alpha: 0.4),
+                                          const Color(0xFFFFB347).withValues(alpha: 0.3),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(screenWidth * 0.05),
+                                      ),
+                                      border: Border(
+                                        right: BorderSide(
+                                          color: const Color(0xFFFFD700).withValues(alpha: 0.3),
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xFFFFD700).withValues(alpha: 0.2),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Player',
+                                        style: TextStyle(
+                                          color: const Color(0xFFFFB347),
+                                          fontSize: screenWidth > 600 ? 20.0 : 18.0,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  ...widget.players.asMap().entries.map((entry) {
+                                    final playerIndex = entry.key;
+                                    final player = entry.value;
                                     return Container(
                                       height: cellHeight,
+                                      width: playerColumnWidth,
                                       padding: EdgeInsets.symmetric(
                                         vertical: screenHeight * 0.01,
                                         horizontal: screenWidth * 0.025,
@@ -536,34 +534,25 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                                       decoration: BoxDecoration(
                                         border: Border(
                                           right: BorderSide(
-                                            color: const Color(
-                                              0xFFFFD700,
-                                            ).withValues(alpha: 0.25),
+                                            color: const Color(0xFFFFD700).withValues(alpha: 0.25),
                                             width: 1.5,
                                           ),
                                           bottom: BorderSide(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.15,
-                                            ),
+                                            color: Colors.white.withValues(alpha: 0.15),
                                             width: 1,
                                           ),
                                         ),
                                         gradient: playerIndex.isEven
                                             ? LinearGradient(
                                           colors: [
-                                            const Color(
-                                              0xFF1A1A2E,
-                                            ).withValues(alpha: 0.4),
-                                            const Color(
-                                              0xFF16213E,
-                                            ).withValues(alpha: 0.3),
+                                            const Color(0xFF1A1A2E).withValues(alpha: 0.4),
+                                            const Color(0xFF16213E).withValues(alpha: 0.3),
                                           ],
                                         )
                                             : null,
                                       ),
                                       child: Column(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Container(
                                             width: screenWidth > 600
@@ -573,56 +562,36 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                                                 ? 65.0
                                                 : (isSmallScreen ? 45.0 : 55.0),
                                             decoration: BoxDecoration(
-                                              borderRadius:
-                                              BorderRadius.circular(
-                                                (screenWidth > 600
-                                                    ? 65.0
-                                                    : (isSmallScreen
-                                                    ? 45.0
-                                                    : 55.0)) *
-                                                    0.25,
+                                              borderRadius: BorderRadius.circular(
+                                                (screenWidth > 600 ? 65.0 : (isSmallScreen ? 45.0 : 55.0)) * 0.25,
                                               ),
                                               border: Border.all(
-                                                color: const Color(
-                                                  0xFFFFD700,
-                                                ).withValues(alpha: 0.6),
+                                                color: const Color(0xFFFFD700).withValues(alpha: 0.6),
                                                 width: 2.5,
                                               ),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: const Color(
-                                                    0xFFFFD700,
-                                                  ).withValues(alpha: 0.4),
+                                                  color: const Color(0xFFFFD700).withValues(alpha: 0.4),
                                                   blurRadius: 10,
                                                   offset: const Offset(0, 3),
                                                 ),
                                               ],
                                             ),
                                             child: ClipRRect(
-                                              borderRadius:
-                                              BorderRadius.circular(
-                                                (screenWidth > 600
-                                                    ? 65.0
-                                                    : (isSmallScreen
-                                                    ? 45.0
-                                                    : 55.0)) *
-                                                    0.2,
+                                              borderRadius: BorderRadius.circular(
+                                                (screenWidth > 600 ? 65.0 : (isSmallScreen ? 45.0 : 55.0)) * 0.2,
                                               ),
                                               child: _buildPlayerIcon(player),
                                             ),
                                           ),
-                                          SizedBox(
-                                            height: screenHeight * 0.008,
-                                          ),
+                                          SizedBox(height: screenHeight * 0.008),
                                           Text(
                                             player.name,
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: screenWidth > 600
                                                   ? 16.0
-                                                  : (isSmallScreen
-                                                  ? 12.0
-                                                  : 14.0),
+                                                  : (isSmallScreen ? 12.0 : 14.0),
                                               fontWeight: FontWeight.w700,
                                               letterSpacing: 0.3,
                                             ),
@@ -633,404 +602,274 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                                         ],
                                       ),
                                     );
-                                  },
-                                ),
+                                  }).toList(),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            controller: _horizontalScrollController,
-                            scrollDirection: Axis.horizontal,
-                            physics: const ClampingScrollPhysics(),
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        const Color(
-                                          0xFFFFD700,
-                                        ).withValues(alpha: 0.4),
-                                        const Color(
-                                          0xFFFFB347,
-                                        ).withValues(alpha: 0.3),
-                                      ],
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: List.generate(totalHoles, (index) {
-                                      return SizedBox(
-                                        width: cellWidth,
-                                        child: Center(
-                                          child: Text(
-                                            'Hole',
-                                            style: TextStyle(
-                                              color: const Color(0xFFFFB347),
-                                              fontSize: screenWidth > 600
-                                                  ? 14.0
-                                                  : (isSmallScreen ? 11.0 : 12.0), // Adjusted for small screens
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                                Container(
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        const Color(0xFF4CAF50).withValues(alpha: 0.3),
-                                        const Color(0xFF2E7D32).withValues(alpha: 0.2),
-                                      ],
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: List.generate(totalHoles, (index) {
-                                      final hole = index + 1;
-                                      final parValue = holeParValues[hole] ?? 2;
-                                      return Container(
-                                        width: cellWidth,
+                              // Scores
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  controller: _horizontalScrollController,
+                                  scrollDirection: Axis.horizontal,
+                                  physics: const ClampingScrollPhysics(),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        height: 40,
                                         decoration: BoxDecoration(
-                                          border: Border(
-                                            right: BorderSide(
-                                              color: Colors.white.withValues(alpha: 0.15),
-                                              width: 1,
-                                            ),
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              FittedBox(  // ADD THIS
-                                                fit: BoxFit.scaleDown,  // ADD THIS
-                                                child: Text(
-                                                  'PAR',
-                                                  style: TextStyle(
-                                                    color: const Color(0xFF4CAF50),
-                                                    fontSize: screenWidth > 600
-                                                        ? 12.0
-                                                        : (isSmallScreen ? 9.0 : 10.0),
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ),  // ADD THIS
-                                              FittedBox(  // ADD THIS
-                                                fit: BoxFit.scaleDown,  // ADD THIS
-                                                child: Text(
-                                                  '$parValue',
-                                                  style: TextStyle(
-                                                    color: const Color(0xFF4CAF50),
-                                                    fontSize: screenWidth > 600
-                                                        ? 16.0
-                                                        : (isSmallScreen ? 12.0 : 14.0),
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),  // ADD THIS
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              const Color(0xFFFFD700).withValues(alpha: 0.4),
+                                              const Color(0xFFFFB347).withValues(alpha: 0.3),
                                             ],
                                           ),
                                         ),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                                Container(
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        const Color(
-                                          0xFFFFD700,
-                                        ).withValues(alpha: 0.4),
-                                        const Color(
-                                          0xFFFFB347,
-                                        ).withValues(alpha: 0.3),
-                                      ],
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(
-                                          0xFFFFD700,
-                                        ).withValues(alpha: 0.2),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Row(
-                                    children: List.generate(totalHoles, (index) {
-                                      return Container(
-                                        width: cellWidth,
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: screenHeight * 0.015,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                            right: BorderSide(
-                                              color: Colors.white.withValues(
-                                                alpha: 0.15,
-                                              ),
-                                              width: 1,
-                                            ),
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            '${index + 1}',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: const Color(0xFFFFB347),
-                                              fontSize: screenWidth > 600
-                                                  ? 18.0
-                                                  : (isSmallScreen ? 14.0 : 16.0), // Adjusted for small screens
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 0.5,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                                ...widget.players.asMap().entries.map((entry) {
-                                  final playerIndex = entry.key;
-                                  final player = entry.value;
-                                  return Container(
-                                    height: cellHeight,
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.15,
-                                          ),
-                                          width: 1,
-                                        ),
-                                      ),
-                                      gradient: playerIndex.isEven
-                                          ? LinearGradient(
-                                        colors: [
-                                          const Color(
-                                            0xFF1A1A2E,
-                                          ).withValues(alpha: 0.4),
-                                          const Color(
-                                            0xFF16213E,
-                                          ).withValues(alpha: 0.3),
-                                        ],
-                                      )
-                                          : null,
-                                    ),
-                                    child: Row(
-                                      children: List.generate(totalHoles, (holeIndex) {
-                                        final hole = holeIndex + 1;
-                                        return GestureDetector(
-                                          onTap: () => _showNumberWheel(
-                                            playerIndex,
-                                            hole,
-                                          ),
-                                          child: Container(
-                                            width: cellWidth,
-                                            padding: EdgeInsets.all(
-                                              screenWidth * 0.02,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              border: Border(
-                                                right: BorderSide(
-                                                  color: Colors.white
-                                                      .withValues(alpha: 0.08),
-                                                  width: 1,
-                                                ),
-                                              ),
-                                            ),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    const Color(
-                                                      0xFF0A0A0F,
-                                                    ).withValues(alpha: 0.7),
-                                                    const Color(
-                                                      0xFF1A1A2E,
-                                                    ).withValues(alpha: 0.5),
-                                                  ],
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                ),
-                                                borderRadius:
-                                                BorderRadius.circular(
-                                                  screenWidth * 0.03,
-                                                ),
-                                                border: Border.all(
-                                                  color: const Color(
-                                                    0xFFFFD700,
-                                                  ).withValues(alpha: 0.2),
-                                                  width: 1.5,
-                                                ),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withValues(alpha: 0.3),
-                                                    blurRadius: 4,
-                                                    offset: const Offset(0, 2),
-                                                  ),
-                                                ],
-                                              ),
+                                        child: Row(
+                                          children: List.generate(totalHoles, (index) {
+                                            return SizedBox(
+                                              width: cellWidth,
                                               child: Center(
                                                 child: Text(
-                                                  strokeControllers[player
-                                                      .name]![hole]!
-                                                      .text
-                                                      .isNotEmpty
-                                                      ? strokeControllers[player
-                                                      .name]![hole]!
-                                                      .text
-                                                      : '-',
+                                                  'Hole ${index + 1}',
                                                   style: TextStyle(
-                                                    color: Colors.white,
+                                                    color: const Color(0xFFFFB347),
                                                     fontSize: screenWidth > 600
-                                                        ? 24.0
-                                                        : (isSmallScreen
-                                                        ? 18.0
-                                                        : 22.0),
+                                                        ? 14.0
+                                                        : (isSmallScreen ? 11.0 : 12.0),
                                                     fontWeight: FontWeight.bold,
-                                                    letterSpacing: 0.5,
                                                   ),
                                                 ),
                                               ),
+                                            );
+                                          }),
+                                        ),
+                                      ),
+                                      Container(
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              const Color(0xFF4CAF50).withValues(alpha: 0.3),
+                                              const Color(0xFF2E7D32).withValues(alpha: 0.2),
+                                            ],
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: List.generate(totalHoles, (index) {
+                                            final hole = index + 1;
+                                            final parValue = holeParValues[hole] ?? 2;
+                                            return Container(
+                                              width: cellWidth,
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  right: BorderSide(
+                                                    color: Colors.white.withValues(alpha: 0.15),
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                              ),
+                                              child: Center(
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    FittedBox(
+                                                      fit: BoxFit.scaleDown,
+                                                      child: Text(
+                                                        'PAR: $parValue',
+                                                        style: TextStyle(
+                                                          color: const Color(0xFF4CAF50),
+                                                          fontSize: screenWidth > 600
+                                                              ? 12.0
+                                                              : (isSmallScreen ? 9.0 : 10.0),
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          }),
+                                        ),
+                                      ),
+                                      ...widget.players.asMap().entries.map((entry) {
+                                        final playerIndex = entry.key;
+                                        final player = entry.value;
+                                        return Container(
+                                          height: cellHeight,
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                color: Colors.white.withValues(alpha: 0.15),
+                                                width: 1,
+                                              ),
                                             ),
+                                            gradient: playerIndex.isEven
+                                                ? LinearGradient(
+                                              colors: [
+                                                const Color(0xFF1A1A2E).withValues(alpha: 0.4),
+                                                const Color(0xFF16213E).withValues(alpha: 0.3),
+                                              ],
+                                            )
+                                                : null,
+                                          ),
+                                          child: Row(
+                                            children: List.generate(totalHoles, (holeIndex) {
+                                              final hole = holeIndex + 1;
+                                              return GestureDetector(
+                                                onTap: () => _showNumberWheel(playerIndex, hole),
+                                                child: Container(
+                                                  width: cellWidth,
+                                                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.035, vertical: screenHeight*0.028),
+                                                  decoration: BoxDecoration(
+                                                    border: Border(
+                                                      right: BorderSide(
+                                                        color: Colors.white.withValues(alpha: 0.08),
+                                                        width: 1,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                        colors: [
+                                                          const Color(0xFF0A0A0F).withValues(alpha: 0.7),
+                                                          const Color(0xFF1A1A2E).withValues(alpha: 0.5),
+                                                        ],
+                                                        begin: Alignment.topLeft,
+                                                        end: Alignment.bottomRight,
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                                                      border: Border.all(
+                                                        color: const Color(0xFFFFD700).withValues(alpha: 0.2),
+                                                        width: 1.5,
+                                                      ),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors.black.withValues(alpha: 0.3),
+                                                          blurRadius: 4,
+                                                          offset: const Offset(0, 2),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        strokeControllers[player.name]![hole]!.text.isNotEmpty
+                                                            ? strokeControllers[player.name]![hole]!.text
+                                                            : '-',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: screenWidth > 600
+                                                              ? 24.0
+                                                              : (isSmallScreen ? 18.0 : 22.0),
+                                                          fontWeight: FontWeight.bold,
+                                                          letterSpacing: 0.5,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }),
                                           ),
                                         );
-                                      }),
-                                    ),
-                                  );
-                                }).toList(),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Column(
-                          children: [
-                            Container(
-                              width: totalColumnWidth,
-                              height: 120.0,
-                              padding: EdgeInsets.symmetric(
-                                vertical: screenHeight * 0.015,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    const Color(
-                                      0xFFFFD700,
-                                    ).withValues(alpha: 0.4),
-                                    const Color(
-                                      0xFFFFB347,
-                                    ).withValues(alpha: 0.3),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(screenWidth * 0.05),
-                                ),
-                                border: Border(
-                                  left: BorderSide(
-                                    color: const Color(
-                                      0xFFFFD700,
-                                    ).withValues(alpha: 0.3),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(
-                                      0xFFFFD700,
-                                    ).withValues(alpha: 0.2),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Total',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: const Color(0xFFFFB347),
-                                      fontSize: screenWidth > 600 ? 20.0 : 18.0,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                  SizedBox(height: screenHeight * 0.005),
-                                  Column(
-                                    children: [
-                                      Text(
-                                        'PAR 9: 20',
-                                        style: TextStyle(
-                                          color: const Color(0xFF4CAF50),
-                                          fontSize: screenWidth > 600
-                                              ? 12.0
-                                              : (isSmallScreen ? 9.0 : 10.0), // Adjusted for small screens
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Text(
-                                        'PAR 18: 43',
-                                        style: TextStyle(
-                                          color: const Color(0xFF4CAF50),
-                                          fontSize: screenWidth > 600
-                                              ? 12.0
-                                              : (isSmallScreen ? 9.0 : 10.0), // Adjusted for small screens
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
+                                      }).toList(),
                                     ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: SizedBox(
-                                width: totalColumnWidth,
-                                child: ListView.builder(
-                                  itemCount: widget.players.length,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemBuilder: (context, playerIndex) {
-                                    final player = widget.players[playerIndex];
+                              // Total
+                              Column(
+                                children: [
+                                  Container(
+                                    width: totalColumnWidth,
+                                    height: 80.0,
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          const Color(0xFFFFD700).withValues(alpha: 0.4),
+                                          const Color(0xFFFFB347).withValues(alpha: 0.3),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(screenWidth * 0.05),
+                                      ),
+                                      border: Border(
+                                        left: BorderSide(
+                                          color: const Color(0xFFFFD700).withValues(alpha: 0.3),
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xFFFFD700).withValues(alpha: 0.2),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Total',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: const Color(0xFFFFB347),
+                                            fontSize: screenWidth > 600 ? 18.0 : 15.0,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                        SizedBox(height: screenHeight * 0.005),
+                                        Column(
+                                          children: [
+                                            Text(
+                                              'PAR 9: 20',
+                                              style: TextStyle(
+                                                color: const Color(0xFF4CAF50),
+                                                fontSize: screenWidth > 600
+                                                    ? 12.0
+                                                    : (isSmallScreen ? 9.0 : 10.0),
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            Text(
+                                              'PAR 18: 43',
+                                              style: TextStyle(
+                                                color: const Color(0xFF4CAF50),
+                                                fontSize: screenWidth > 600
+                                                    ? 12.0
+                                                    : (isSmallScreen ? 9.0 : 10.0),
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  ...widget.players.asMap().entries.map((entry) {
+                                    final playerIndex = entry.key;
+                                    final player = entry.value;
                                     return Container(
                                       height: cellHeight,
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: screenHeight * 0.01,
-                                      ),
+                                      width: totalColumnWidth,
+                                      padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
                                       decoration: BoxDecoration(
                                         border: Border(
                                           left: BorderSide(
-                                            color: const Color(
-                                              0xFFFFD700,
-                                            ).withValues(alpha: 0.25),
+                                            color: const Color(0xFFFFD700).withValues(alpha: 0.25),
                                             width: 1.5,
                                           ),
                                           bottom: BorderSide(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.15,
-                                            ),
+                                            color: Colors.white.withValues(alpha: 0.15),
                                             width: 1,
                                           ),
                                         ),
                                         gradient: LinearGradient(
                                           colors: [
-                                            const Color(
-                                              0xFFFFD700,
-                                            ).withValues(alpha: 0.2),
-                                            const Color(
-                                              0xFFFFB347,
-                                            ).withValues(alpha: 0.1),
+                                            const Color(0xFFFFD700).withValues(alpha: 0.2),
+                                            const Color(0xFFFFB347).withValues(alpha: 0.1),
                                           ],
                                           begin: Alignment.centerLeft,
                                           end: Alignment.centerRight,
@@ -1045,28 +884,18 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                                           decoration: BoxDecoration(
                                             gradient: LinearGradient(
                                               colors: [
-                                                const Color(
-                                                  0xFFFFD700,
-                                                ).withValues(alpha: 0.3),
-                                                const Color(
-                                                  0xFFFFB347,
-                                                ).withValues(alpha: 0.2),
+                                                const Color(0xFFFFD700).withValues(alpha: 0.3),
+                                                const Color(0xFFFFB347).withValues(alpha: 0.2),
                                               ],
                                             ),
-                                            borderRadius: BorderRadius.circular(
-                                              screenWidth * 0.03,
-                                            ),
+                                            borderRadius: BorderRadius.circular(screenWidth * 0.03),
                                             border: Border.all(
-                                              color: const Color(
-                                                0xFFFFD700,
-                                              ).withValues(alpha: 0.4),
+                                              color: const Color(0xFFFFD700).withValues(alpha: 0.4),
                                               width: 1.5,
                                             ),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: const Color(
-                                                  0xFFFFD700,
-                                                ).withValues(alpha: 0.3),
+                                                color: const Color(0xFFFFD700).withValues(alpha: 0.3),
                                                 blurRadius: 8,
                                                 offset: const Offset(0, 2),
                                               ),
@@ -1079,9 +908,7 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                                               color: const Color(0xFFFFB347),
                                               fontSize: screenWidth > 600
                                                   ? 32.0
-                                                  : (isSmallScreen
-                                                  ? 24.0
-                                                  : 28.0),
+                                                  : (isSmallScreen ? 24.0 : 28.0),
                                               fontWeight: FontWeight.bold,
                                               letterSpacing: 0.5,
                                             ),
@@ -1089,143 +916,168 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                                         ),
                                       ),
                                     );
-                                  },
+                                  }).toList(),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                // Floating bottom section
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          const Color(0xFF0A0A0F).withValues(alpha: 0.95),
+                          const Color(0xFF0A0A0F),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        // Text section
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            vertical: screenHeight * 0.01,
+                            horizontal: screenWidth * 0.05,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.5),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                'Scary Strokes - Southern Marylands ULTIMATE family fun experience!',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: screenWidth * 0.025,
+                                  fontStyle: FontStyle.italic,
                                 ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: screenHeight * 0.005),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.facebook,
+                                    color: Colors.blue,
+                                    size: screenWidth * 0.04,
+                                  ),
+                                  SizedBox(width: screenWidth * 0.02),
+                                  Text(
+                                    'facebook.com/scarystrokes',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: screenWidth * 0.025,
+                                    ),
+                                  ),
+                                  SizedBox(width: screenWidth * 0.04),
+                                  Icon(
+                                    Icons.flag,
+                                    color: Colors.red,
+                                    size: screenWidth * 0.04,
+                                  ),
+                                  SizedBox(width: screenWidth * 0.02),
+                                  Text(
+                                    '@ScaryStrokes',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: screenWidth * 0.025,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: screenHeight * 0.005),
+                              Text(
+                                'VOTED #1 "Best Fun Things to Do" AND "Best Date Night Fun" in Waldorf MD',
+                                style: TextStyle(
+                                  color: const Color(0xFFFFD700),
+                                  fontSize: screenWidth * 0.025,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Button
+                        Padding(
+                          padding: EdgeInsets.all(screenWidth * 0.05),
+                          child: GestureDetector(
+                            onTap: isSaving ? null : _saveMatchToDatabase,
+                            child: Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.symmetric(
+                                vertical: screenHeight * 0.022,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: isSaving
+                                      ? [
+                                    const Color(0xFF666666),
+                                    const Color(0xFF444444),
+                                  ]
+                                      : [
+                                    const Color(0xFFFFD700),
+                                    const Color(0xFFE63946),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFFFD700).withValues(alpha: 0.4),
+                                    blurRadius: 15,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (isSaving)
+                                    SizedBox(
+                                      width: screenWidth * 0.05,
+                                      height: screenWidth * 0.05,
+                                      child: const CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation(
+                                          Colors.white,
+                                        ),
+                                      ),
+                                    )
+                                  else
+                                    Icon(
+                                      Icons.flag,
+                                      color: Colors.white,
+                                      size: screenWidth * 0.06,
+                                    ),
+                                  SizedBox(width: screenWidth * 0.03),
+                                  Text(
+                                    isSaving ? 'Saving...' : 'Finish Match',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: screenWidth * 0.045,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: screenHeight * 0.01,
-                    horizontal: screenWidth * 0.05,
-                  ),
-                  color: Colors.black.withValues(alpha: 0.5),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Scary Strokes - Southern Marylands ULTIMATE family fun experience!',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: screenWidth * 0.025,
-                          fontStyle: FontStyle.italic,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: screenHeight * 0.005),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.facebook,
-                            color: Colors.blue,
-                            size: screenWidth * 0.04,
-                          ),
-                          SizedBox(width: screenWidth * 0.02),
-                          Text(
-                            'facebook.com/scarystrokes',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: screenWidth * 0.025,
-                            ),
-                          ),
-                          SizedBox(width: screenWidth * 0.04),
-                          Icon(
-                            Icons.flag,
-                            color: Colors.red,
-                            size: screenWidth * 0.04,
-                          ),
-                          SizedBox(width: screenWidth * 0.02),
-                          Text(
-                            '@ScaryStrokes',
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontSize: screenWidth * 0.025,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: screenHeight * 0.005),
-                      Text(
-                        'VOTED #1 "Best Fun Things to Do" AND "Best Date Night Fun" in Waldorf MD',
-                        style: TextStyle(
-                          color: const Color(0xFFFFD700),
-                          fontSize: screenWidth * 0.025,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.05),
-                  child: GestureDetector(
-                    onTap: isSaving ? null : _saveMatchToDatabase,
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(
-                        vertical: screenHeight * 0.022,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: isSaving
-                              ? [
-                            const Color(0xFF666666),
-                            const Color(0xFF444444),
-                          ]
-                              : [
-                            const Color(0xFFFFD700),
-                            const Color(0xFFE63946),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(screenWidth * 0.05),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(
-                              0xFFFFD700,
-                            ).withValues(alpha: 0.4),
-                            blurRadius: 15,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (isSaving)
-                            SizedBox(
-                              width: screenWidth * 0.05,
-                              height: screenWidth * 0.05,
-                              child: const CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation(
-                                  Colors.white,
-                                ),
-                              ),
-                            )
-                          else
-                            Icon(
-                              Icons.flag,
-                              color: Colors.white,
-                              size: screenWidth * 0.06,
-                            ),
-                          SizedBox(width: screenWidth * 0.03),
-                          Text(
-                            isSaving ? 'Saving...' : 'Finish Match',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: screenWidth * 0.045,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                   ),
                 ),
