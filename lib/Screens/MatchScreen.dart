@@ -1305,8 +1305,8 @@ class _NumberWheelDialogState extends State<NumberWheelDialog> {
     super.initState();
     _selectedNumber = widget.currentValue ?? 1;
 
-    // Create numbers from 1 to 12 for mini-golf
-    _numbers = List.generate(12, (index) => index + 1);
+    // Create numbers from 1 to 6 for mini-golf
+    _numbers = List.generate(6, (index) => index + 1);
   }
 
   void _handleTap(Offset localPosition, Size size) {
@@ -1430,12 +1430,6 @@ class _NumberWheelDialogState extends State<NumberWheelDialog> {
       const Color(0xFF4CAF50),
       const Color(0xFF2196F3),
       const Color(0xFF9C27B0),
-      const Color(0xFFE91E63),
-      const Color(0xFF00BCD4),
-      const Color(0xFF8BC34A),
-      const Color(0xFFFF5722),
-      const Color(0xFF673AB7),
-      const Color(0xFF009688),
     ];
 
     return _numbers.asMap().entries.map((entry) {
