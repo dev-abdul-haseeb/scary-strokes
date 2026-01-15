@@ -38,18 +38,20 @@ dependencies:
   path: ^1.9.1
   flutter_native_splash: ^2.4.7
   image_picker: ^1.2.1
+  lottie: ^3.3.2
+  confetti: ^0.8.0
 
 flutter_native_splash:
   color: "#0A0A0F"
-  image: Assets/image.png
+  image: Assets/logo.png
 
   android_12:
     color: "#0A0A0F"
-    image: Assets/image.png
+    image: Assets/logo.png
     branding: ""
 
   color_dark: "#0A0A0F"
-  image_dark: Assets/image.png
+  image_dark: Assets/logo.png
 
   android: true
   ios: true
