@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:scary_strokes/Screens/homeScreen.dart';
 import 'package:scary_strokes/Screens/startGameScreen.dart';
 import '../Database/database.dart';
 import 'package:confetti/confetti.dart';
 import 'dart:math' as math;
-
 
 class StartMatchScreen extends StatefulWidget {
   final List<PlayerData> players;
@@ -21,6 +21,7 @@ class _StartMatchScreenState extends State<StartMatchScreen>
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
   late ConfettiController _confettiController;
+  late ConfettiController _holeInOneConfettiController;
 
   final Map<int, int> holeParValues = {
     1: 3,
@@ -68,6 +69,9 @@ class _StartMatchScreenState extends State<StartMatchScreen>
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 5),
     );
+    _holeInOneConfettiController = ConfettiController(
+      duration: const Duration(seconds: 3),
+    );
   }
 
   @override
@@ -80,6 +84,7 @@ class _StartMatchScreenState extends State<StartMatchScreen>
     _fadeController.dispose();
     _horizontalScrollController.dispose();
     _confettiController.dispose();
+    _holeInOneConfettiController.dispose();
     super.dispose();
   }
 
@@ -98,9 +103,54 @@ class _StartMatchScreenState extends State<StartMatchScreen>
             controller.text = number.toString();
             setState(() {});
             Navigator.pop(context);
+
+            // Check for hole in one
+            if (number == 1) {
+              _showHoleInOneCelebration(player, hole);
+            }
+
             _autoScrollToHole(hole);
           },
         ),
+      ),
+    );
+  }
+
+  void _showHoleInOneCelebration(PlayerData player, int hole) {
+    _holeInOneConfettiController.play();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: ConfettiWidget(
+              confettiController: _holeInOneConfettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              shouldLoop: false,
+              colors: const [
+                Colors.amber,
+                Colors.yellow,
+                Colors.orange,
+                Colors.red,
+                Colors.pink,
+              ],
+              numberOfParticles: 30,
+            ),
+          ),
+          Dialog(
+            backgroundColor: Colors.transparent,
+            child: HoleInOneCelebrationDialog(
+              player: player,
+              holeNumber: hole,
+              onClose: () {
+                _holeInOneConfettiController.stop();
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -208,45 +258,86 @@ class _StartMatchScreenState extends State<StartMatchScreen>
     var sortedPlayers = widget.players.toList()
       ..sort((a, b) => finalScores[a.name]!.compareTo(finalScores[b.name]!));
 
-    final winner = sortedPlayers.first;
-    final winnerScore = finalScores[winner.name]!;
+    // Find all winners (players with the lowest score)
+    final winningScore = finalScores[sortedPlayers.first.name]!;
+    final winners = sortedPlayers.where((player) => finalScores[player.name] == winningScore).toList();
 
     _confettiController.play();
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Stack(
-        children: [
-          Positioned.fill(
-            child: ConfettiWidget(
-              confettiController: _confettiController,
-              blastDirectionality: BlastDirectionality.explosive,
-              shouldLoop: true,
-              colors: const [
-                Colors.green,
-                Colors.blue,
-                Colors.pink,
-                Colors.orange,
-                Colors.purple,
-              ],
+    // Check if there are multiple winners
+    if (winners.length > 1) {
+      // Show multiple winners dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Stack(
+          children: [
+            Positioned.fill(
+              child: ConfettiWidget(
+                confettiController: _confettiController,
+                blastDirectionality: BlastDirectionality.explosive,
+                shouldLoop: true,
+                colors: const [
+                  Colors.green,
+                  Colors.blue,
+                  Colors.pink,
+                  Colors.orange,
+                  Colors.purple,
+                ],
+              ),
             ),
-          ),
-          Dialog(
-            backgroundColor: Colors.transparent,
-            child: WinnerCelebrationDialog(
-              winner: winner,
-              winnerScore: winnerScore,
-              onClose: () {
-                _confettiController.stop();
-                Navigator.pop(context);
-                _showFinalLeaderboard(sortedPlayers, finalScores);
-              },
+            Dialog(
+              backgroundColor: Colors.transparent,
+              child: MultipleWinnersCelebrationDialog(
+                winners: winners,
+                winnerScore: winningScore,
+                onClose: () {
+                  _confettiController.stop();
+                  Navigator.pop(context);
+                  _showFinalLeaderboard(sortedPlayers, finalScores);
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    } else {
+      // Show single winner dialog (original behavior)
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Stack(
+          children: [
+            Positioned.fill(
+              child: ConfettiWidget(
+                confettiController: _confettiController,
+                blastDirectionality: BlastDirectionality.explosive,
+                shouldLoop: true,
+                colors: const [
+                  Colors.green,
+                  Colors.blue,
+                  Colors.pink,
+                  Colors.orange,
+                  Colors.purple,
+                ],
+              ),
+            ),
+            Dialog(
+              backgroundColor: Colors.transparent,
+              child: WinnerCelebrationDialog(
+                winner: winners.first,
+                winnerScore: winningScore,
+                onClose: () {
+                  _confettiController.stop();
+                  Navigator.pop(context);
+                  _showFinalLeaderboard(sortedPlayers, finalScores);
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   void _showFinalLeaderboard(
@@ -260,8 +351,7 @@ class _StartMatchScreenState extends State<StartMatchScreen>
         players: sortedPlayers,
         finalScores: finalScores,
         onFinish: () {
-          Navigator.pop(context);
-          //Navigator.pop(context);
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
         },
       ),
     );
@@ -301,13 +391,13 @@ class _StartMatchScreenState extends State<StartMatchScreen>
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final isSmallScreen = screenWidth < 360;
-    final cellWidth = screenWidth > 600 ? 80.0 : (isSmallScreen ? 65.0 : 70.0); // Increased for small screens
+    final cellWidth = screenWidth > 600 ? 80.0 : (isSmallScreen ? 65.0 : 70.0);
     final playerColumnWidth = screenWidth > 600
         ? 140.0
-        : (isSmallScreen ? 100.0 : 110.0); // Increased for small screens
+        : (isSmallScreen ? 100.0 : 110.0);
     final totalColumnWidth = screenWidth > 600
         ? 80.0
-        : (isSmallScreen ? 65.0 : 60.0); // Increased for small screens
+        : (isSmallScreen ? 65.0 : 60.0);
     final cellHeight = screenWidth > 600
         ? 115.0
         : (isSmallScreen ? 90.0 : 106.0);
@@ -326,10 +416,8 @@ class _StartMatchScreenState extends State<StartMatchScreen>
             opacity: _fadeAnimation,
             child: Stack(
               children: [
-                // Main scrollable content
                 Column(
                   children: [
-                    // Top bar
                     Padding(
                       padding: EdgeInsets.all(screenWidth * 0.05),
                       child: Row(
@@ -443,11 +531,10 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                         ],
                       ),
                     ),
-                    // Scrollable match table
                     Expanded(
                       child: SingleChildScrollView(
                         padding: EdgeInsets.only(
-                          bottom: screenHeight * 0.25, // Space for floating elements
+                          bottom: screenHeight * 0.25,
                         ),
                         child: Container(
                           margin: EdgeInsets.symmetric(
@@ -475,7 +562,6 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                           ),
                           child: Row(
                             children: [
-                              // Player column
                               Column(
                                 children: [
                                   Container(
@@ -605,7 +691,6 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                                   }).toList(),
                                 ],
                               ),
-                              // Scores
                               Expanded(
                                 child: SingleChildScrollView(
                                   controller: _horizontalScrollController,
@@ -777,7 +862,6 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                                   ),
                                 ),
                               ),
-                              // Total
                               Column(
                                 children: [
                                   Container(
@@ -926,7 +1010,6 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                     ),
                   ],
                 ),
-                // Floating bottom section
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -945,7 +1028,6 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                     ),
                     child: Column(
                       children: [
-                        // Text section
                         Container(
                           padding: EdgeInsets.symmetric(
                             vertical: screenHeight * 0.01,
@@ -1011,7 +1093,6 @@ class _StartMatchScreenState extends State<StartMatchScreen>
                             ],
                           ),
                         ),
-                        // Button
                         Padding(
                           padding: EdgeInsets.all(screenWidth * 0.05),
                           child: GestureDetector(
@@ -1136,6 +1217,230 @@ class _StartMatchScreenState extends State<StartMatchScreen>
   }
 }
 
+// Hole in One Celebration Dialog
+class HoleInOneCelebrationDialog extends StatelessWidget {
+  final PlayerData player;
+  final int holeNumber;
+  final VoidCallback onClose;
+
+  const HoleInOneCelebrationDialog({
+    super.key,
+    required this.player,
+    required this.holeNumber,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: screenWidth * 0.85,
+        maxHeight: screenHeight * 0.7,
+      ),
+      padding: EdgeInsets.all(screenWidth * 0.06),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.amber.withValues(alpha: 0.95),
+            Colors.orange.withValues(alpha: 0.95),
+            Colors.deepOrange.withValues(alpha: 0.95),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(screenWidth * 0.08),
+        border: Border.all(color: Colors.yellow, width: 4),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.orange.withValues(alpha: 0.6),
+            blurRadius: 30,
+            spreadRadius: 10,
+          ),
+        ],
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                '⛳ HOLE IN ONE! ⛳',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: screenWidth * 0.09,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                  shadows: const [
+                    Shadow(blurRadius: 10, color: Colors.black54),
+                    Shadow(blurRadius: 20, color: Colors.black38),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.025),
+            Container(
+              padding: EdgeInsets.all(screenWidth * 0.05),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withValues(alpha: 0.3),
+                    Colors.white.withValues(alpha: 0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+              child: Column(
+                children: [
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'AMAZING SHOT!',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: screenWidth * 0.06,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.02),
+                  Container(
+                    width: screenWidth * 0.25,
+                    height: screenWidth * 0.25,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(screenWidth * 0.125),
+                      border: Border.all(
+                        color: Colors.yellow,
+                        width: 5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.yellow.withValues(alpha: 0.6),
+                          blurRadius: 25,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(screenWidth * 0.12),
+                      child: player.customImagePath != null
+                          ? Image.file(
+                        File(player.customImagePath!),
+                        fit: BoxFit.cover,
+                      )
+                          : Image.asset(
+                        'Assets/${player.iconIndex + 1}.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.02),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+                      child: Text(
+                        player.name,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: screenWidth * 0.08,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          shadows: const [
+                            Shadow(blurRadius: 5, color: Colors.black45),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.015),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'scored a perfect shot on',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: screenWidth * 0.045,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.01),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.06,
+                      vertical: screenHeight * 0.01,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      'HOLE $holeNumber',
+                      style: TextStyle(
+                        color: Colors.deepOrange,
+                        fontSize: screenWidth * 0.07,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.03),
+            GestureDetector(
+              onTap: onClose,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.12,
+                  vertical: screenHeight * 0.02,
+                ),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Colors.green, Colors.lightGreen],
+                  ),
+                  borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.green.withValues(alpha: 0.5),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'CONTINUE',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: screenWidth * 0.05,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class NumberWheelDialog extends StatefulWidget {
   final int? currentValue;
   final Function(int) onNumberSelected;
@@ -1156,37 +1461,26 @@ class _NumberWheelDialogState extends State<NumberWheelDialog> {
   void initState() {
     super.initState();
     _selectedNumber = widget.currentValue ?? 1;
-
-    // Create numbers from 1 to 6 for mini-golf
     _numbers = List.generate(6, (index) => index + 1);
   }
 
   void _handleTap(Offset localPosition, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-
-    // Hit radius check
     final double dx = localPosition.dx - center.dx;
     final double dy = localPosition.dy - center.dy;
     final double distance = math.sqrt(dx * dx + dy * dy);
 
-    // Agar center mein tap kiya to kuch nahi karo
     if (distance < size.width * 0.15) {
       return;
     }
 
-    // Angle calculation
     double angle = math.atan2(dy, dx);
-    angle = angle * 180 / math.pi; // Convert to degrees
+    angle = angle * 180 / math.pi;
 
-    // Adjust angle (0-360 range)
     if (angle < 0) angle += 360;
-
-    // Adjust so 0 is at top (12 o'clock)
     angle = (angle + 90) % 360;
 
-    // Map to numbers
     final double segmentAngle = 360 / _numbers.length;
-
     int selectedIndex = (angle / segmentAngle).floor();
     if (selectedIndex >= _numbers.length) {
       selectedIndex = 0;
@@ -1200,7 +1494,7 @@ class _NumberWheelDialogState extends State<NumberWheelDialog> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final size = screenWidth * 0.8; // Slightly larger for more numbers
+    final size = screenWidth * 0.8;
 
     return GestureDetector(
       onTapDown: (details) {
@@ -1290,8 +1584,6 @@ class _NumberWheelDialogState extends State<NumberWheelDialog> {
       final angle = 2 * math.pi / _numbers.length;
       final startAngle = index * angle - math.pi / 2;
       final isSelected = _selectedNumber == number;
-
-      // Reuse colors if more than 12 numbers
       final color = colors[index % colors.length];
 
       return Positioned.fill(
@@ -1310,164 +1602,6 @@ class _NumberWheelDialogState extends State<NumberWheelDialog> {
     }).toList();
   }
 }
-
-// class _NumberWheelDialogState extends State<NumberWheelDialog> {
-//   int _selectedNumber = 1;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _selectedNumber = widget.currentValue ?? 1;
-//   }
-//
-//   void _handleTap(Offset localPosition, Size size) {
-//     final center = Offset(size.width / 2, size.height / 2);
-//
-//     // Hit radius check
-//     final double dx = localPosition.dx - center.dx;
-//     final double dy = localPosition.dy - center.dy;
-//     final double distance = math.sqrt(dx * dx + dy * dy);
-//
-//     // Agar center mein tap kiya to kuch nahi karo
-//     if (distance < size.width * 0.15) {
-//       return;
-//     }
-//
-//     // Angle calculation
-//     double angle = math.atan2(dy, dx);
-//     angle = angle * 180 / math.pi; // Convert to degrees
-//
-//     // Adjust angle (0-360 range)
-//     if (angle < 0) angle += 360;
-//
-//     // Adjust so 0 is at top (12 o'clock)
-//     angle = (angle + 90) % 360;
-//
-//     // Map to numbers 1-6
-//     const List<int> numbers = [1, 2, 3, 4, 5, 6];
-//     const double segmentAngle = 360 / 6;
-//
-//     int selectedIndex = (angle / segmentAngle).floor();
-//     if (selectedIndex >= numbers.length) {
-//       selectedIndex = 0;
-//     }
-//
-//     setState(() {
-//       _selectedNumber = numbers[selectedIndex];
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final screenWidth = MediaQuery.of(context).size.width;
-//     final size = screenWidth * 0.7;
-//
-//     return GestureDetector(
-//       onTapDown: (details) {
-//         final RenderBox box = context.findRenderObject() as RenderBox;
-//         final localPosition = box.globalToLocal(details.globalPosition);
-//         _handleTap(localPosition, Size(size, size));
-//       },
-//       onTap: () {
-//         widget.onNumberSelected(_selectedNumber);
-//       },
-//       child: Container(
-//         width: size,
-//         height: size,
-//         decoration: BoxDecoration(
-//           gradient: LinearGradient(
-//             colors: [
-//               const Color(0xFF2D2D44).withValues(alpha: 0.95),
-//               const Color(0xFF1F1F2E).withValues(alpha: 0.95),
-//             ],
-//           ),
-//           borderRadius: BorderRadius.circular(size * 0.1),
-//           border: Border.all(
-//             color: const Color(0xFFFF8C00).withValues(alpha: 0.5),
-//             width: 3,
-//           ),
-//           boxShadow: [
-//             BoxShadow(
-//               color: Colors.black.withValues(alpha: 0.5),
-//               blurRadius: 20,
-//               spreadRadius: 5,
-//             ),
-//           ],
-//         ),
-//         child: Stack(
-//           children: [
-//             ..._buildPieSegments(size),
-//             Positioned.fill(
-//               child: Center(
-//                 child: Container(
-//                   width: size * 0.3,
-//                   height: size * 0.3,
-//                   decoration: BoxDecoration(
-//                     gradient: const LinearGradient(
-//                       colors: [Color(0xFFFF8C00), Color(0xFFE63946)],
-//                     ),
-//                     shape: BoxShape.circle,
-//                     boxShadow: [
-//                       BoxShadow(
-//                         color: Colors.black.withValues(alpha: 0.3),
-//                         blurRadius: 10,
-//                         spreadRadius: 2,
-//                       ),
-//                     ],
-//                   ),
-//                   child: Center(
-//                     child: Text(
-//                       '$_selectedNumber',
-//                       style: TextStyle(
-//                         color: Colors.white,
-//                         fontSize: size * 0.15,
-//                         fontWeight: FontWeight.bold,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-//
-//   List<Widget> _buildPieSegments(double size) {
-//     const List<int> numbers = [1, 2, 3, 4, 5, 6];
-//     const List<Color> colors = [
-//       Color(0xFFFF5252),
-//       Color(0xFFFF9800),
-//       Color(0xFFFFEB3B),
-//       Color(0xFF4CAF50),
-//       Color(0xFF2196F3),
-//       Color(0xFF9C27B0),
-//     ];
-//
-//     return numbers.asMap().entries.map((entry) {
-//       final index = entry.key;
-//       final number = entry.value;
-//       final angle = 2 * math.pi / numbers.length;
-//       final startAngle = index * angle - math.pi / 2;
-//       final isSelected = _selectedNumber == number;
-//
-//       return Positioned.fill(
-//         child: CustomPaint(
-//           painter: PieSegmentPainter(
-//             startAngle: startAngle,
-//             sweepAngle: angle,
-//             color: colors[index].withValues(alpha: isSelected ? 1.0 : 0.7),
-//             isSelected: isSelected,
-//             segmentIndex: index,
-//             number: number,
-//             size: size,
-//           ),
-//         ),
-//       );
-//     }).toList();
-//   }
-// }
 
 class PieSegmentPainter extends CustomPainter {
   final double startAngle;
@@ -1520,7 +1654,6 @@ class PieSegmentPainter extends CustomPainter {
       );
     }
 
-    // Draw number text
     final textPainter = TextPainter(
       text: TextSpan(
         text: '$number',
@@ -1542,7 +1675,6 @@ class PieSegmentPainter extends CustomPainter {
 
     textPainter.layout();
 
-    // Calculate position for text
     final double textRadius = radius * 0.6;
     final double textAngle = startAngle + sweepAngle / 2;
     final Offset textPosition = Offset(
@@ -2090,4 +2222,230 @@ class FinalLeaderboardDialog extends StatelessWidget {
   }
 }
 
-// Add this import for math calculations
+class MultipleWinnersCelebrationDialog extends StatelessWidget {
+  final List<PlayerData> winners;
+  final int winnerScore;
+  final VoidCallback onClose;
+
+  const MultipleWinnersCelebrationDialog({
+    super.key,
+    required this.winners,
+    required this.winnerScore,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: screenWidth * 0.9,
+        maxHeight: screenHeight * 0.85,
+      ),
+      padding: EdgeInsets.all(screenWidth * 0.06),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.purple.withValues(alpha: 0.9),
+            Colors.blue.withValues(alpha: 0.9),
+            Colors.green.withValues(alpha: 0.9),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(screenWidth * 0.08),
+        border: Border.all(color: const Color(0xFFFFD700), width: 3),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.5),
+            blurRadius: 30,
+            spreadRadius: 10,
+          ),
+        ],
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.emoji_events,
+              color: const Color(0xFFFFD700),
+              size: screenWidth * 0.15,
+            ),
+            SizedBox(height: screenHeight * 0.015),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                "IT'S A TIE!",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: screenWidth * 0.09,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                  shadows: const [Shadow(blurRadius: 10, color: Colors.black54)],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'CONGRATULATIONS!',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: screenWidth * 0.06,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
+                  shadows: const [Shadow(blurRadius: 8, color: Colors.black45)],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.02),
+            Container(
+              padding: EdgeInsets.all(screenWidth * 0.05),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFFFFD700).withValues(alpha: 0.3),
+                    const Color(0xFFFFD700).withValues(alpha: 0.2),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                border: Border.all(color: const Color(0xFFFFD700), width: 2),
+              ),
+              child: Column(
+                children: [
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      winners.length == 2 ? 'The Winners are' : 'The Winners are',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: screenWidth * 0.05,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.02),
+                  // Display all winners
+                  ...winners.map((winner) {
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: screenHeight * 0.015),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: screenWidth * 0.18,
+                            height: screenWidth * 0.18,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(screenWidth * 0.09),
+                              border: Border.all(
+                                color: const Color(0xFFFFD700),
+                                width: 4,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFFFD700).withValues(alpha: 0.5),
+                                  blurRadius: 20,
+                                  spreadRadius: 5,
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(screenWidth * 0.09),
+                              child: winner.customImagePath != null
+                                  ? Image.file(
+                                File(winner.customImagePath!),
+                                fit: BoxFit.cover,
+                              )
+                                  : Image.asset(
+                                'Assets/${winner.iconIndex + 1}.png',
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.01),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+                              child: Text(
+                                winner.name,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: screenWidth * 0.06,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  SizedBox(height: screenHeight * 0.01),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'with a score of',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: screenWidth * 0.04,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.008),
+                  Text(
+                    '$winnerScore',
+                    style: TextStyle(
+                      color: const Color(0xFFFFD700),
+                      fontSize: screenWidth * 0.1,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.025),
+            GestureDetector(
+              onTap: onClose,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.1,
+                  vertical: screenHeight * 0.018,
+                ),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Colors.green, Colors.lightGreen],
+                  ),
+                  borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.green.withValues(alpha: 0.5),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'VIEW LEADERBOARD',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: screenWidth * 0.045,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
