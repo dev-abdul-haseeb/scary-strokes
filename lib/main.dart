@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scary_strokes/Screens/splash_screen.dart';
-import 'Screens/homeScreen.dart';
+import 'Screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());

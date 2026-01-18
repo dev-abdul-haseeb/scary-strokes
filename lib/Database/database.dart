@@ -61,6 +61,7 @@ class DatabaseHelper {
         match_id INTEGER,
         player_name TEXT,
         player_icon_index INTEGER,
+        custom_image_path TEXT,
         total_strokes INTEGER,
         date TEXT,
         FOREIGN KEY (match_id) REFERENCES matches(id) ON DELETE CASCADE
@@ -138,6 +139,7 @@ class DatabaseHelper {
     required String playerName,
     required int playerIconIndex,
     required int totalStrokes,
+    String? customImagePath,
   }) async {
     final db = await database;
 
@@ -157,6 +159,7 @@ class DatabaseHelper {
       'player_icon_index': playerIconIndex,
       'total_strokes': totalStrokes,
       'date': matchDate,
+      'custom_image_path': customImagePath,
     });
   }
 
@@ -177,7 +180,7 @@ class DatabaseHelper {
     final db = await database;
     return await db.query(
       'winners',
-      orderBy: 'date DESC',
+      orderBy: 'total_strokes ASC',
     );
   }
 
