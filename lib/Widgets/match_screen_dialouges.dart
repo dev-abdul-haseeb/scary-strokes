@@ -1012,80 +1012,142 @@ class MischiefWheelDialog extends StatefulWidget {
 }
 
 class _MischiefWheelDialogState extends State<MischiefWheelDialog>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _spinController;
+  late AnimationController _stopController;
   double _wheelAngle = 0.0;
-  bool _isSpinning = false;
+  bool _isSpinning = true;
+  bool _showWheel = true;
   String _selectedAction = '';
 
   final List<String> _wheelActions = [
-    'PUTT WITH YOUR EYES CLOSED',
-    'PUTT BACKWARDS',
-    'USE YOUR OPPOSITE HAND',
-    'USE A HOCKEY STICK MOTION',
-    'PUTT WITH ONE HAND',
+    'Use only your foot to hit the ball for every shot',
+    'Take a group selfie with this spinner before continuing',
+    'If you get a hole-in-one on this hole, trade overall scores with an opponent of your choice',
+    'After everyone has taken their first shot, move an opponent\'s ball anywhere on the hole',
+    'Play with the hole normally',
+    'You must complete this hole within 1 seconds after your first shot or suffer a 1 stroke penalty',
+    'You must remain silent until everyone has completed this hole or suffer a 1 stroke penalty',
+    'If you get a hole-in-one stroke on this hole, stand anywhere on the course as an obstacle for any remaining players, first shot',
+    'Attempt your first shot balancing on one leg',
+    'Use the wrong end of your club to hit the ball on your first shot',
+    'When you finish this hole, subtract 1 from your score',
+    'Choose an opponent to stand on the course as an extra obstacle for your first shot (opponent chooses location)',
+    'Write down your actual score for this hole, even if you exceed the stroke limit',
+    'After everyone has taken their first shot, switch ball positions with any opponent',
+    'Use only one hand to hit the ball on your first shot',
+    'Roll the ball with your hand instead of using the putter on your first shot',
+    'If you get a hole-in-one on this hole, add 2 strokes to an opponent\'s score',
+    'Use the wrong end of your club to hit the ball for every shot on this hole',
+    'If you hit an opponent\'s ball with your first shot, trade scores with them for this hole',
+    'After everyone has taken their first shot, move an opponent\'s ball by the length of your club',
+    'Choose an opponent to make the next shot with their eyes closed (one shot only)',
+    'Choose an opponent to attempt their next shot holding their putter behind their back',
+    'Attempt your next shot with your eyes closed',
+    'Use only one hand to hit the ball on your first shot',
+    'After everyone has taken their first shot, swap balls with an opponent (must stay in bounds)',
+    'If you hit an opponent\'s ball with your ball on your first shot, trade overall scores with them',
+    'If you get a hole-in-one on this hole, add one stroke to opponent\'s score for this hole',
+    'After everyone has taken their first shot, switch ball positions with any opponent',
+    'After your first shot, stand anywhere on the course as an obstacle to for an opponent\'s next shot',
+    'Roll the ball with your hand instead of putter on your first shot',
+    'Attempt your first shot by passing the putter between your legs',
+    'Use only your foot to hit the ball on your first shot',
+    'If you get a hole-in-one on this hole, trade overall scores with an opponent of your choice',
+    'If you are unable to complete this hole in 2 shots, you must put a 4 on the scorecard for the hole',
   ];
 
   @override
   void initState() {
     super.initState();
+
+    // Controller for continuous spinning
     _spinController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+
+    // Controller for stopping animation
+    _stopController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     );
+
+    // Start spinning automatically
+    _spinController.repeat();
+
+    // Listen to spin controller to update wheel angle
+    _spinController.addListener(() {
+      if (_isSpinning) {
+        setState(() {
+          _wheelAngle = _spinController.value * 360;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     _spinController.dispose();
+    _stopController.dispose();
     super.dispose();
   }
 
-  void _spinWheel() {
-    if (_isSpinning) return;
+  void _stopWheel() {
+    if (!_isSpinning) return;
 
     setState(() {
-      _isSpinning = true;
-      _selectedAction = '';
+      _isSpinning = false;
     });
 
+    // Stop the continuous spinning
+    _spinController.stop();
+
     final random = math.Random();
-    final rotations = 3 + random.nextInt(3);
+    final finalRotations = 3 + random.nextDouble() * 2; // 3-5 full rotations
     final segmentAngle = 360 / _wheelActions.length;
     final randomSegment = random.nextInt(_wheelActions.length);
-    final targetAngle = (rotations * 360) + (randomSegment * segmentAngle);
+    final targetAngle = _wheelAngle + (finalRotations * 360) + (randomSegment * segmentAngle);
 
-    _spinController.reset();
-    final spinAnimation = Tween<double>(
+    // Create stop animation
+    final stopAnimation = Tween<double>(
       begin: _wheelAngle,
       end: targetAngle,
     ).animate(CurvedAnimation(
-      parent: _spinController,
+      parent: _stopController,
       curve: Curves.easeOutCubic,
     ));
 
-    spinAnimation.addListener(() {
+    stopAnimation.addListener(() {
       setState(() {
-        _wheelAngle = spinAnimation.value % 360;
+        _wheelAngle = stopAnimation.value % 360;
       });
     });
 
-    spinAnimation.addStatusListener((status) {
+    stopAnimation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
+        // Calculate which segment we landed on
         final normalizedAngle = _wheelAngle % 360;
         final segmentAngle = 360 / _wheelActions.length;
-        int selectedIndex = ((360 - normalizedAngle) / segmentAngle).floor() % _wheelActions.length;
 
+        // Adjust for the pointer being at the top
+        final adjustedAngle = (360 - normalizedAngle + 90) % 360;
+        int selectedIndex = (adjustedAngle / segmentAngle).floor() % _wheelActions.length;
+
+        // Show the result after a brief delay
         Future.delayed(const Duration(milliseconds: 500), () {
-          setState(() {
-            _selectedAction = _wheelActions[selectedIndex];
-            _isSpinning = false;
-          });
+          if (mounted) {
+            setState(() {
+              _selectedAction = _wheelActions[selectedIndex];
+              _showWheel = false;
+            });
+          }
         });
       }
     });
 
-    _spinController.forward();
+    // Start the stop animation
+    _stopController.forward(from: 0);
   }
 
   @override
@@ -1107,13 +1169,26 @@ class _MischiefWheelDialogState extends State<MischiefWheelDialog>
         padding: EdgeInsets.all(isSmallScreen ? screenWidth * 0.03 : screenWidth * 0.05),
         decoration: BoxDecoration(
           gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
-              const Color(0xFF1A1A2E).withValues(alpha:0.95),
-              const Color(0xFF0F3460).withValues(alpha:0.95),
+              const Color(0xFF1A1A2E).withValues(alpha: 0.95),
+              const Color(0xFF0F3460).withValues(alpha: 0.95),
+              const Color(0xFF16213E).withValues(alpha: 0.95),
             ],
           ),
           borderRadius: BorderRadius.circular(screenWidth * 0.08),
-          border: Border.all(color: const Color(0xFFFFD700).withValues(alpha:0.7), width: 3),
+          border: Border.all(
+            color: const Color(0xFFFFD700).withValues(alpha: 0.7),
+            width: 3,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFFFD700).withValues(alpha: 0.3),
+              blurRadius: 20,
+              spreadRadius: 2,
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1123,8 +1198,16 @@ class _MischiefWheelDialogState extends State<MischiefWheelDialog>
                 Container(
                   padding: EdgeInsets.all(screenWidth * 0.02),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFD700),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFFD700), Color(0xFFFF6B35)],
+                    ),
                     borderRadius: BorderRadius.circular(screenWidth * 0.02),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFFD700).withValues(alpha: 0.5),
+                        blurRadius: 8,
+                      ),
+                    ],
                   ),
                   child: Icon(
                     Icons.casino,
@@ -1143,6 +1226,7 @@ class _MischiefWheelDialogState extends State<MischiefWheelDialog>
                           color: const Color(0xFFFFD700),
                           fontSize: screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
                         ),
                       ),
                       Text(
@@ -1162,126 +1246,224 @@ class _MischiefWheelDialogState extends State<MischiefWheelDialog>
             Container(
               padding: EdgeInsets.all(screenWidth * 0.03),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha:0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                border: Border.all(
+                  color: const Color(0xFFFFD700).withValues(alpha: 0.3),
+                  width: 1,
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Column(
                     children: [
-                      Text('PLAYER', style: TextStyle(color: Colors.white70, fontSize: screenWidth * 0.03)),
-                      Text(widget.playerName, style: TextStyle(color: const Color(0xFFFFD700), fontSize: screenWidth * 0.04)),
+                      Text(
+                        'PLAYER',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: screenWidth * 0.03,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      Text(
+                        widget.playerName,
+                        style: TextStyle(
+                          color: const Color(0xFFFFD700),
+                          fontSize: screenWidth * 0.04,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                   SizedBox(width: screenWidth * 0.08),
                   Column(
                     children: [
-                      Text('HOLE', style: TextStyle(color: Colors.white70, fontSize: screenWidth * 0.03)),
-                      Text('${widget.holeNumber}', style: TextStyle(color: const Color(0xFFFFD700), fontSize: screenWidth * 0.04)),
+                      Text(
+                        'HOLE',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: screenWidth * 0.03,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      Text(
+                        '${widget.holeNumber}',
+                        style: TextStyle(
+                          color: const Color(0xFFFFD700),
+                          fontSize: screenWidth * 0.04,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
             SizedBox(height: screenHeight * 0.03),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: wheelSize * 0.9,
-                  height: wheelSize * 0.9,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        const Color(0xFFFFD700).withValues(alpha:0.3),
-                        const Color(0xFFE63946).withValues(alpha:0.2),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 800),
+              switchInCurve: Curves.easeIn,
+              switchOutCurve: Curves.easeOut,
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  ),
+                );
+              },
+              child: _showWheel
+                  ? Stack(
+                key: const ValueKey('wheel'),
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: wheelSize * 0.9,
+                    height: wheelSize * 0.9,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFFD700).withValues(alpha: 0.3),
+                          blurRadius: 30,
+                          spreadRadius: 10,
+                        ),
                       ],
                     ),
-                    border: Border.all(color: const Color(0xFFFFD700).withValues(alpha:0.5), width: 5),
                   ),
-                ),
-                AnimatedBuilder(
-                  animation: _spinController,
-                  builder: (context, child) {
-                    return Transform.rotate(
-                      angle: _wheelAngle * (math.pi / 180),
-                      child: CustomPaint(
-                        size: Size(wheelSize * 0.8, wheelSize * 0.8),
-                        painter: WheelPainter(
-                          actions: _wheelActions,
-                          selectedIndex: _selectedAction.isNotEmpty ? _wheelActions.indexOf(_selectedAction) : -1,
+                  Transform.rotate(
+                    angle: _wheelAngle * (math.pi / 180),
+                    child: CustomPaint(
+                      size: Size(wheelSize * 0.8, wheelSize * 0.8),
+                      painter: RainbowWheelPainter(
+                        segmentCount: _wheelActions.length,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: wheelSize * 0.25,
+                    height: wheelSize * 0.25,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFFFFD700),
+                          Color(0xFFFF6B35),
+                          Color(0xFFE63946),
+                        ],
+                      ),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        _isSpinning ? 'SPIN' : 'STOP',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: wheelSize * 0.06,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
                         ),
                       ),
-                    );
-                  },
-                ),
-                Container(
-                  width: wheelSize * 0.25,
-                  height: wheelSize * 0.25,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [Color(0xFFFFD700), Color(0xFFE63946)]),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 4),
+                    ),
                   ),
-                  child: Center(
-                    child: Text(
-                      'SPIN',
-                      style: TextStyle(
+                  Positioned(
+                    top: wheelSize * 0.05,
+                    child: Container(
+                      width: wheelSize * 0.1,
+                      height: wheelSize * 0.15,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFE63946), Color(0xFFFF6B35)],
+                        ),
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(20),
+                          bottomRight: Radius.circular(20),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFE63946).withValues(alpha: 0.5),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.arrow_drop_down,
                         color: Colors.white,
-                        fontSize: wheelSize * 0.06,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                ),
-                Positioned(
-                  top: wheelSize * 0.05,
-                  child: Container(
-                    width: wheelSize * 0.1,
-                    height: wheelSize * 0.15,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFE63946),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                    ),
-                    child: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: screenHeight * 0.03),
-            if (_selectedAction.isNotEmpty)
-              Container(
-                padding: EdgeInsets.all(screenWidth * 0.04),
+                ],
+              )
+                  : Container(
+                key: const ValueKey('result'),
+                padding: EdgeInsets.all(screenWidth * 0.06),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [Color(0xFFFFD700), Color(0xFF4CAF50)]),
-                  borderRadius: BorderRadius.circular(15),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFFFF6B35),
+                      const Color(0xFFE63946),
+                      const Color(0xFFD62828),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFE63946).withValues(alpha: 0.5),
+                      blurRadius: 20,
+                      spreadRadius: 5,
+                    ),
+                  ],
                 ),
                 child: Column(
                   children: [
-                    Text('YOUR CHALLENGE:', style: TextStyle(color: Colors.white, fontSize: screenWidth * 0.04)),
-                    SizedBox(height: screenHeight * 0.01),
-                    Text(_selectedAction, style: TextStyle(color: Colors.white, fontSize: screenWidth * 0.045)),
+                    Icon(
+                      Icons.stars,
+                      color: const Color(0xFFFFD700),
+                      size: screenWidth * 0.12,
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+                    Text(
+                      'YOUR CHALLENGE',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: screenWidth * 0.04,
+                        letterSpacing: 2,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+                    Text(
+                      _selectedAction,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: screenWidth * 0.055,
+                        fontWeight: FontWeight.bold,
+                        height: 1.3,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withValues(alpha: 0.5),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              )
-            else
-              Container(
-                padding: EdgeInsets.all(screenWidth * 0.04),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha:0.3),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Text(
-                  'Spin the wheel for a random challenge!',
-                  style: TextStyle(color: Colors.white70, fontSize: screenWidth * 0.04),
-                ),
               ),
+            ),
             SizedBox(height: screenHeight * 0.03),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -1289,21 +1471,58 @@ class _MischiefWheelDialogState extends State<MischiefWheelDialog>
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey[800],
-                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06, vertical: screenHeight * 0.015),
-                  ),
-                  child: Text('CLOSE', style: TextStyle(color: Colors.white, fontSize: screenWidth * 0.035)),
-                ),
-                ElevatedButton(
-                  onPressed: _isSpinning ? null : _spinWheel,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFD700),
-                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08, vertical: screenHeight * 0.015),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.06,
+                      vertical: screenHeight * 0.015,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: Text(
-                    _isSpinning ? 'SPINNING...' : 'SPIN WHEEL',
-                    style: TextStyle(color: Colors.white, fontSize: screenWidth * 0.035),
+                    'CLOSE',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: screenWidth * 0.035,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
+                if (_showWheel)
+                  ElevatedButton(
+                    onPressed: _isSpinning ? _stopWheel : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _isSpinning
+                          ? const Color(0xFFE63946)
+                          : Colors.grey[600],
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.08,
+                        vertical: screenHeight * 0.015,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 8,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.stop_circle,
+                          color: Colors.white,
+                          size: screenWidth * 0.05,
+                        ),
+                        SizedBox(width: screenWidth * 0.02),
+                        Text(
+                          'STOP',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: screenWidth * 0.04,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ],
@@ -1312,37 +1531,43 @@ class _MischiefWheelDialogState extends State<MischiefWheelDialog>
     );
   }
 }
+class RainbowWheelPainter extends CustomPainter {
+  final int segmentCount;
 
-class WheelPainter extends CustomPainter {
-  final List<String> actions;
-  final int selectedIndex;
-
-  WheelPainter({
-    required this.actions,
-    required this.selectedIndex,
+  RainbowWheelPainter({
+    required this.segmentCount,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
-    final segmentAngle = 2 * math.pi / actions.length;
+    final segmentAngle = 2 * math.pi / segmentCount;
 
-    final colors = [
-      const Color(0xFFFF5252),
-      const Color(0xFFFF9800),
-      const Color(0xFFFFEB3B),
-      const Color(0xFF4CAF50),
-      const Color(0xFF2196F3),
-      const Color(0xFF9C27B0),
+    final rainbowColors = [
+      const Color(0xFFFF0000), // Red
+      const Color(0xFFFF7F00), // Orange
+      const Color(0xFFFFFF00), // Yellow
+      const Color(0xFF00FF00), // Green
+      const Color(0xFF0000FF), // Blue
+      const Color(0xFF4B0082), // Indigo
+      const Color(0xFF9400D3), // Violet
     ];
 
-    for (int i = 0; i < actions.length; i++) {
+    for (int i = 0; i < segmentCount; i++) {
       final startAngle = i * segmentAngle;
+
+      final gradient = SweepGradient(
+        startAngle: startAngle,
+        endAngle: startAngle + segmentAngle,
+        colors: [
+          rainbowColors[i % rainbowColors.length],
+          rainbowColors[(i + 1) % rainbowColors.length],
+        ],
+      );
+
       final paint = Paint()
-        ..color = selectedIndex == i
-            ? colors[i % colors.length].withValues(alpha:1.0)
-            : colors[i % colors.length].withValues(alpha:0.7)
+        ..shader = gradient.createShader(Rect.fromCircle(center: center, radius: radius))
         ..style = PaintingStyle.fill;
 
       canvas.drawArc(
@@ -1354,9 +1579,9 @@ class WheelPainter extends CustomPainter {
       );
 
       final borderPaint = Paint()
-        ..color = Colors.white.withValues(alpha:0.3)
+        ..color = Colors.white.withValues(alpha: 0.4)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1;
+        ..strokeWidth = 2;
 
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
@@ -1365,35 +1590,9 @@ class WheelPainter extends CustomPainter {
         true,
         borderPaint,
       );
-
-      final textAngle = startAngle + segmentAngle / 2;
-      final textRadius = radius * 0.7;
-      final textPosition = Offset(
-        center.dx + textRadius * math.cos(textAngle),
-        center.dy + textRadius * math.sin(textAngle),
-      );
-
-      final textPainter = TextPainter(
-        text: TextSpan(
-          text: actions[i],
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr,
-      )..layout();
-
-      canvas.save();
-      canvas.translate(textPosition.dx, textPosition.dy);
-      canvas.rotate(textAngle + math.pi / 2);
-      textPainter.paint(canvas, Offset(-textPainter.width / 2, -textPainter.height / 2));
-      canvas.restore();
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
