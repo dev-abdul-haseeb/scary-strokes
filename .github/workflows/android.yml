@@ -54,5 +54,5 @@ jobs:
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
-          name: Scary Strokes
+          name: Scary Strokes(aab)
           path: build/app/outputs/bundle/release/app-release.aab
