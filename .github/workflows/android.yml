@@ -33,6 +33,12 @@ jobs:
       - name: Get packages
         run: flutter pub get
 
+      - name: Clean build
+        run: flutter clean
+
+      - name: Generate launcher icons
+        run: flutter pub run flutter_launcher_icons
+
       - name: Build APK
         run: flutter build apk --release
 
