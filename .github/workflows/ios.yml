@@ -1,4 +1,4 @@
-name: iOS Build (APP)
+name: iOS Build (IPA)
 
 on:
   push:
@@ -31,11 +31,11 @@ jobs:
       - name: Generate launcher icons
         run: flutter pub run flutter_launcher_icons
 
-      - name: Build iOS (Release, no signing)
-        run: flutter build ios --release --no-codesign
+      - name: Build IPA (no code signing)
+        run: flutter build ipa --release --no-codesign
 
-      - name: Upload iOS App
+      - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: Scary Strokes (iOS)
-          path: build/ios/iphoneos/Runner.app
+          name: Scary Strokes (iOS IPA)
+          path: build/ios/ipa/*.ipa
