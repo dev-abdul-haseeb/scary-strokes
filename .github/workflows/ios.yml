@@ -1,0 +1,41 @@
+name: iOS Build (APP)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.1"
+          channel: stable
+
+      - name: Check Flutter & Dart version
+        run: |
+          flutter --version
+          dart --version
+
+      - name: Get packages
+        run: flutter pub get
+
+      - name: Clean build
+        run: flutter clean
+
+      - name: Generate launcher icons
+        run: flutter pub run flutter_launcher_icons
+
+      - name: Build iOS (Release, no signing)
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload iOS App
+        uses: actions/upload-artifact@v4
+        with:
+          name: Scary Strokes (iOS)
+          path: build/ios/iphoneos/Runner.app
